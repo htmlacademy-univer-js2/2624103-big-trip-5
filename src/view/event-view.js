@@ -1,14 +1,29 @@
-import {createElement} from '../render';
-import {formatDate, formatTime, calculateDuration} from '../utils/date';
+import AbstractView from './abstract-view.js';
+import { formatDate, formatTime, calculateDuration } from '../utils/date.js';
 
-export default class EventView {
-  constructor(event) {
-    this._event = event;
-    this._element = null;
+export default class EventView extends AbstractView {
+  #event = null;
+  #destination = null;
+  #offers = null;
+  #handleEditClick = null;
+  #handleFavoriteClick = null;
+
+  constructor({ event, destination, offers, onEditClick, onFavoriteClick }) {
+    super();
+    this.#event = event;
+    this.#destination = destination;
+    this.#offers = offers;
+    this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 
-  getTemplate() {
-    const {type, destination, dateFrom, dateTo, basePrice, offers, isFavorite} = this._event;
+  get template() {
+    const { type, dateFrom, dateTo, basePrice, isFavorite } = this.#event;
 
     return `
       <li class="trip-events__item">
@@ -20,7 +35,7 @@ export default class EventView {
             <img class="event__type-icon" width="42" height="42" 
                  src="img/icons/${type}.png" alt="Event type icon">
           </div>
-          <h3 class="event__title">${type} ${destination.name}</h3>
+          <h3 class="event__title">${type} ${this.#destination?.name || ''}</h3>
           
           <div class="event__schedule">
             <p class="event__time">
@@ -39,18 +54,7 @@ export default class EventView {
             &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
           </p>
           
-          ${offers.length > 0 ? `
-            <h4 class="visually-hidden">Offers:</h4>
-            <ul class="event__selected-offers">
-              ${offers.map(offer => `
-                <li class="event__offer">
-                  <span class="event__offer-title">${offer.title}</span>
-                  &plus;&euro;&nbsp;
-                  <span class="event__offer-price">${offer.price}</span>
-                </li>
-              `).join('')}
-            </ul>
-          ` : ''}
+          ${this.#renderOffers()}
           
           <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
             <span class="visually-hidden">Add to favorite</span>
@@ -67,14 +71,32 @@ export default class EventView {
     `;
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
+  #renderOffers() {
+    if (!this.#offers?.length) {
+      return '';
     }
-    return this._element;
+
+    return `
+      <h4 class="visually-hidden">Offers:</h4>
+      <ul class="event__selected-offers">
+        ${this.#offers.map((offer) => `
+          <li class="event__offer">
+            <span class="event__offer-title">${offer.title}</span>
+            &plus;&euro;&nbsp;
+            <span class="event__offer-price">${offer.price}</span>
+          </li>
+        `).join('')}
+      </ul>
+    `;
   }
 
-  removeElement() {
-    this._element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
+
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
 }
