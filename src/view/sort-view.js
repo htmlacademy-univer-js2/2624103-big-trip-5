@@ -82,4 +82,13 @@ export default class SortView {
   removeElement() {
     this._element = null;
   }
+  setSortTypeChangeHandler(callback) {
+    this._callback.sortTypeChange = callback;
+    this.getElement().addEventListener('change', this._sortTypeChangeHandler);
+  }
+  
+  _sortTypeChangeHandler(evt) {
+    evt.preventDefault();
+    this._callback.sortTypeChange(evt.target.value);
+  }
 }
