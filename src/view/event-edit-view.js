@@ -1,9 +1,8 @@
-import AbstractView from './abstract-view.js';
+import AbstractStatefulView from './abstract-stateful-view.js';
 import { formatDate, formatTime } from '../utils/date.js';
 import { EVENT_TYPES } from '../const.js';
 
-export default class EventEditView extends AbstractView {
-  #event = null;
+export default class EventEditView extends AbstractStatefulView {
   #destinations = null;
   #offers = null;
   #handleFormSubmit = null;
@@ -12,20 +11,18 @@ export default class EventEditView extends AbstractView {
 
   constructor({ event, destinations, offers, onFormSubmit, onDeleteClick, onCloseClick }) {
     super();
-    this.#event = event;
+    this._state = EventEditView.parseEventToState(event);
     this.#destinations = destinations;
     this.#offers = offers;
     this.#handleFormSubmit = onFormSubmit;
     this.#handleDeleteClick = onDeleteClick;
     this.#handleCloseClick = onCloseClick;
 
-    this.element.addEventListener('submit', this.#formSubmitHandler);
-    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
+    this._restoreHandlers();
   }
 
   get template() {
-    const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = this.#event;
+    const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } = this._state;
     const destinationData = this.#destinations.find((d) => d.id === destination);
     const typeOffers = this.#offers.find((o) => o.type === type)?.offers || [];
 
@@ -81,7 +78,7 @@ export default class EventEditView extends AbstractView {
     return `
       <div class="event__field-group event__field-group--destination">
         <label class="event__label event__type-output" for="event-destination-1">
-          ${this.#event.type}
+          ${this._state}
         </label>
         <input class="event__input event__input--destination" id="event-destination-1" 
                type="text" name="event-destination" value="${destination?.name || ''}" 
@@ -197,10 +194,13 @@ export default class EventEditView extends AbstractView {
       </section>
     `;
   }
+  static parseEventToState(event) {
+    return { ...event };
+  }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#parseFormData());
+    this.#handleFormSubmit(EventEditView.parseEventToState(this._state));
   };
 
   #deleteClickHandler = (evt) => {
@@ -216,7 +216,7 @@ export default class EventEditView extends AbstractView {
   #parseFormData() {
     const form = this.element;
     return {
-      ...this.#event,
+      ...this._state,
       type: form.querySelector('input[name="event-type"]:checked').value,
       destination: this.#findDestinationId(form.querySelector('input[name="event-destination"]').value),
       dateFrom: new Date(form.querySelector('input[name="event-start-time"]').value),
@@ -231,4 +231,5 @@ export default class EventEditView extends AbstractView {
     const destination = this.#destinations.find((d) => d.name === name);
     return destination ? destination.id : '';
   }
+  
 }
