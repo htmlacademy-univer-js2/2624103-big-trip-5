@@ -16,10 +16,7 @@ export default class EventView extends AbstractView {
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
 
-    this.element.querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#editClickHandler);
-    this.element.querySelector('.event__favorite-btn')
-      .addEventListener('click', this.#favoriteClickHandler);
+    this._setHandlers();
   }
 
   get template() {
@@ -54,7 +51,7 @@ export default class EventView extends AbstractView {
             &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
           </p>
           
-          ${this.#renderOffers()}
+          ${tthis._setHandlers()}
           
           <button class="event__favorite-btn ${isFavorite ? 'event__favorite-btn--active' : ''}" type="button">
             <span class="visually-hidden">Add to favorite</span>
@@ -70,24 +67,11 @@ export default class EventView extends AbstractView {
       </li>
     `;
   }
-
-  #renderOffers() {
-    if (!this.#offers?.length) {
-      return '';
-    }
-
-    return `
-      <h4 class="visually-hidden">Offers:</h4>
-      <ul class="event__selected-offers">
-        ${this.#offers.map((offer) => `
-          <li class="event__offer">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </li>
-        `).join('')}
-      </ul>
-    `;
+  _setHandlers() {
+    this.element.querySelector('.event__rollup-btn')
+      .addEventListener('click', this.#editClickHandler);
+    this.element.querySelector('.event__favorite-btn')
+      .addEventListener('click', this.#favoriteClickHandler);
   }
 
   #editClickHandler = (evt) => {

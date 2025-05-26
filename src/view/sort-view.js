@@ -1,9 +1,9 @@
-import {createElement} from '../render';
+import AbstractView from './abstract-view.js';
 
-export default class SortView {
+export default class SortView extends AbstractView {
   constructor(currentSortType) {
+    super();
     this._currentSortType = currentSortType;
-    this._element = null;
   }
 
   getTemplate() {
@@ -72,23 +72,14 @@ export default class SortView {
     `;
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
-  }
+ 
   setSortTypeChangeHandler(callback) {
     this._callback.sortTypeChange = callback;
-    this.getElement().addEventListener('change', this._sortTypeChangeHandler);
+    this.element.addEventListener('change', this._sortTypeChangeHandler);
   }
-  
-  _sortTypeChangeHandler(evt) {
+
+  _sortTypeChangeHandler = (evt) => {
     evt.preventDefault();
     this._callback.sortTypeChange(evt.target.value);
-  }
+  };
 }
