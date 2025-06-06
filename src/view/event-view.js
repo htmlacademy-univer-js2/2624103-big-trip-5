@@ -1,5 +1,5 @@
 import {createElement} from '../render';
-import {formatDate, formatTime, calculateDuration} from '../utils/date';
+import { formatDate, formatTime, calculateDuration } from '../utils/date';
 
 export default class EventView {
   constructor(event) {

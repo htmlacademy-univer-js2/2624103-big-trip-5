@@ -5,30 +5,31 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: './src/main.js',
   output: {
-    filename: 'bundle.[contenthash].js', 
+    filename: 'js/main.[contenthash].js', 
     path: path.resolve(__dirname, 'build'),
+    publicPath: '/', 
     clean: true,
   },
   devtool: 'source-map',
   devServer: {
     static: {
-      directory: path.join(__dirname, 'public'),
+      directory: path.join(__dirname, 'build'), 
     },
     hot: true,
     port: 3000,
+    historyApiFallback: true, 
   },
   plugins: [
-   
     new HtmlWebpackPlugin({
       template: './public/index.html',
-      filename: 'index.html',         
-      inject: 'body',                 
+      filename: 'index.html',
+      inject: 'body',
     }),
     new CopyPlugin({
       patterns: [
         { 
-          from: 'public', 
-          to: 'build',
+          from: 'public',
+          to: '',
           globOptions: {
             ignore: ['**/index.html'] 
           }
