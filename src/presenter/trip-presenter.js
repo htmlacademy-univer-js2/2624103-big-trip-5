@@ -50,66 +50,61 @@ export default class TripPresenter {
   }
 
   _renderFilters() {
-    
-   const filtersContainer = this._tripContainer.querySelector('.trip-controls__filters');
+  const filtersContainer = this._tripContainer.querySelector('.trip-controls__filters');
   if (!filtersContainer) {
-    console.error('Фильтры: контейнер не найден');
     return;
   }
-  
   filtersContainer.innerHTML = '';
-    const filters = [
-      {type: 'everything', name: 'Everything', count: this._eventsModel.getEvents().length},
-      {type: 'future', name: 'Future', count: this._eventsModel.getFutureEvents().length},
-      {type: 'present', name: 'Present', count: this._eventsModel.getPresentEvents().length},
-      {type: 'past', name: 'Past', count: this._eventsModel.getPastEvents().length}
-    ];
-    
-    container.innerHTML = '';
-    this._filtersComponent = new FiltersView(filters, 'everything');
-    render(this._filtersComponent, container);
-  }
+  const filters = [
+    { type: 'everything', name: 'Everything', count: this._eventsModel.getEvents().length },
+    { type: 'future', name: 'Future', count: this._eventsModel.getFutureEvents().length },
+    { type: 'past', name: 'Past', count: this._eventsModel.getPastEvents().length }
+  ];
+  this._filtersComponent = new FiltersView(filters, 'everything');
+  render(this._filtersComponent, filtersContainer); 
+}
 
   _renderSort() {
-    const container = this._tripContainer.querySelector('.trip-sort-container');
+     const sortContainer = this._tripContainer.querySelector('.trip-events__trip-sort');
     
-    container.innerHTML = '';
-    this._sortComponent = new SortView(this._currentSortType);
-    render(this._sortComponent, container);
-    this._sortComponent.setSortTypeChangeHandler(this._handleSortTypeChange);
+    if (!sortContainer) {
+    return;
+  }
+  sortContainer.innerHTML = '';
+  this._sortComponent = new SortView(this._currentSortType);
+  render(this._sortComponent, sortContainer);
   }
 
- _renderEventsList() {
-    const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
-    eventsListElement.innerHTML = '';
-
-    if (this._eventsModel.getEvents().length === 0) {
-      render(new EmptyListView(), eventsListElement);
-      return;
-    }
-
-   
+_renderEventsList() {
+  const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
+  if (!eventsListElement) {
+    return;
+  }
+  eventsListElement.innerHTML = '';
+  const events = this._eventsModel.getEvents();
+  const destinations = this._destinationsModel.getDestinations();
+  const offers = this._offersModel.getOffers();
+  if (events.length === 0) {
+    render(new EmptyListView(), eventsListElement);
+  } else {
     render(
-      new EventEditView(
-        this._eventsModel.getEvents()[0],
-        this._destinationsModel.getDestinations(),
-        this._offersModel.getOffers()
-      ),
+      new EventEditView(events[0], destinations, offers),
       eventsListElement
     );
-
-    
-    this._eventsModel.getEvents().slice(1, 3).forEach((event) => {
+    events.slice(0, 3).forEach(event => {
       render(new EventView(event), eventsListElement);
     });
   }
+}
   _renderNewEventButton() {
-    const container = this._tripContainer.querySelector('.trip-main');
-    
-    this._newEventButtonComponent = new NewEventButtonView();
-    render(this._newEventButtonComponent, container);
-    this._newEventButtonComponent.getElement()
-      .addEventListener('click', this._handleNewEventClick);
+     const container = this._tripContainer.querySelector('.trip-main');
+  if (!container) {
+    return;
+  } 
+  this._newEventButtonComponent = new NewEventButtonView();
+  render(this._newEventButtonComponent, container);
+  this._newEventButtonComponent.getElement()
+    .addEventListener('click', this._handleNewEventClick);
   }
 
   _handleSortTypeChange(sortType) {

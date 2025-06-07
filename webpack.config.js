@@ -4,12 +4,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/main.js',
-  output: {
-    filename: 'js/main.[contenthash].js', 
-    path: path.resolve(__dirname, 'build'),
-    publicPath: '/', 
-    clean: true,
-  },
+ output: {
+  filename: 'js/main.[contenthash].js',
+  path: path.resolve(__dirname, 'build'),
+  publicPath: '/', 
+},
   devtool: 'source-map',
   devServer: {
     static: {
@@ -20,22 +19,23 @@ module.exports = {
     historyApiFallback: true, 
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-      filename: 'index.html',
-      inject: 'body',
-    }),
-    new CopyPlugin({
-      patterns: [
-        { 
-          from: 'public',
-          to: '',
-          globOptions: {
-            ignore: ['**/index.html'] 
-          }
-        },
-      ],
-    }),
+   new HtmlWebpackPlugin({
+  template: './public/index.html',
+  filename: 'index.html',
+  inject: 'body', 
+  minify: false 
+}),
+   new CopyPlugin({
+  patterns: [
+    {
+      from: 'public',
+      to: '',
+      globOptions: {
+        ignore: ['**/*.html'] 
+      }
+    }
+  ]
+}),
   ],
   mode: 'development',
   module: {
