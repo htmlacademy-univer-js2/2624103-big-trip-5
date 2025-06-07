@@ -1,17 +1,18 @@
 export default class OffersModel {
   constructor() {
-    this._offers = [
-      {
-        type: 'taxi',
-        offers: [
-          { id: 1, title: 'Повысить класс', price: 20 },
-          { id: 2, title: 'Детское кресло', price: 10 }
-        ]
-      }
-    ];
+    this._offers = [];
   }
 
   getOffers() {
     return this._offers;
+  }
+
+  getOffersByType(type) {
+    const offerGroup = this._offers.find(offer => offer.type === type);
+    return offerGroup ? offerGroup.offers : [];
+  }
+
+  setOffers(offers) {
+    this._offers = offers;
   }
 }

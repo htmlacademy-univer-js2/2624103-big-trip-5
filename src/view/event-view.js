@@ -2,13 +2,20 @@ import {createElement} from '../render';
 import { formatDate, formatTime, calculateDuration } from '../utils/date';
 
 export default class EventView {
-  constructor(event) {
-    this._event = event;
-    this._element = null;
-  }
+  constructor(event, destinationsModel, offersModel) {
+  this._event = event;
+  this._destinationsModel = destinationsModel;
+  this._offersModel = offersModel;
+  this._element = null;
+}
 
   getTemplate() {
-    const {type, destination, dateFrom, dateTo, basePrice, offers, isFavorite} = this._event;
+    const destination = this._destinationsModel.getDestinationById(this._event.destination);
+  if (!destination) return '';
+  const offers = this._offersModel.getOffersByType(this._event.type)
+    .filter(offer => this._event.offers.includes(offer.id));
+  const dateFrom = new Date(this._event.dateFrom);
+  const dateTo = new Date(this._event.dateTo);
 
     return `
       <li class="trip-events__item">

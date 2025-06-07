@@ -32,6 +32,11 @@ export default class TripPresenter {
   }
 
   init() {
+     console.log('Проверка данных:', {
+    events: this._eventsModel.getEvents(),
+    destinations: this._destinationsModel.getDestinations(),
+    offers: this._offersModel.getOffers()
+  });
     this._renderTripInfo();
     this._renderFilters();
     this._renderSort();
@@ -39,6 +44,18 @@ export default class TripPresenter {
     this._renderNewEventButton();
   }
 
+showTestEditForm() {
+  this._clearEventsList();
+  const testEvent = this._eventsModel.getEvents()[0]; // Берём первое событие
+  render(
+    new EventEditView(
+      testEvent,
+      this._destinationsModel,
+      this._offersModel
+    ),
+    this._tripContainer.querySelector('.trip-events__list')
+  );
+}
   _renderTripInfo() {
     const container = this._tripContainer.querySelector('.trip-main__trip-info');
     const events = this._eventsModel.getEvents();
@@ -113,33 +130,48 @@ _renderEventsList() {
     this._renderEventsList();
   }
 
-  _handleNewEventClick() {
-    const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
-    eventsListElement.innerHTML = '';
-
-    render(
-      new EventEditView(
-        DEFAULT_EVENT,
-        this._destinationsModel.getDestinations(),
-        this._offersModel.getOffers()
-      ),
-      eventsListElement
-    );
-  }
+ _handleNewEventClick() {
+  const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
+  eventsListElement.innerHTML = '';
+  render(
+    new EventEditView(
+      DEFAULT_EVENT,
+      this._destinationsModel,
+      this._offersModel 
+    ),
+    eventsListElement
+  );
+}
 
   _clearEventsList() {
     this._tripContainer.querySelector('.trip-events__list').innerHTML = '';
   }
 
-  _sortEvents(sortType) {
-    const events = this._eventsModel.getEvents();
-    switch (sortType) {
-      case SortType.TIME:
-        return [...events].sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
-      case SortType.PRICE:
-        return [...events].sort((a, b) => b.basePrice - a.basePrice);
-      default: // DAY
-        return [...events].sort((a, b) => a.dateFrom - b.dateFrom);
+  _getSortedEvents() {
+  switch (this._currentSortType) {
+    case SortType.TIME:
+      return this._eventsModel.getEventsSortedByTime();
+    case SortType.PRICE:
+      return this._eventsModel.getEventsSortedByPrice();
+    default: // DAY
+      return this._eventsModel.getEventsSortedByDay();
     }
   }
+  _renderEventsList() {
+  const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
+  if (!eventsListElement) return;
+  
+  eventsListElement.innerHTML = '';
+  const events = this._getSortedEvents(); // Используем новый метод
+  const destinations = this._destinationsModel.getDestinations();
+  const offers = this._offersModel.getOffers();
+
+  if (events.length === 0) {
+    render(new EmptyListView(), eventsListElement);
+  } else {
+    events.forEach(event => {
+      render(new EventView(event, this._destinationsModel, this._offersModel), eventsListElement);
+    });
+  }
+}
 }

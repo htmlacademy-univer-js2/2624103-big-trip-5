@@ -1,18 +1,47 @@
-export const formatDate = (date) => {
+const parseDate = (dateInput) => {
+  if (dateInput instanceof Date) {
+    return isNaN(dateInput.getTime()) ? null : dateInput;
+  }
+  const date = new Date(dateInput);
+  return isNaN(date.getTime()) ? null : date;
+};
+
+export const formatDate = (dateInput) => {
+  const date = parseDate(dateInput);
+  if (!date) {
+    console.error('Invalid date input:', dateInput);
+    return 'N/A';
+  }
+  
   return date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric'
   });
 };
 
-export const formatTime = (date) => {
+export const formatTime = (dateInput) => {
+  const date = parseDate(dateInput);
+  if (!date) {
+    console.error('Invalid date input:', dateInput);
+    return 'N/A';
+  }
+  
   return date.toLocaleTimeString('en-US', {
     hour: '2-digit',
     minute: '2-digit'
   });
 };
-export const calculateDuration = (dateFrom, dateTo) => {
-  const diff = dateTo - dateFrom; 
+
+export const calculateDuration = (dateFromInput, dateToInput) => {
+  const dateFrom = parseDate(dateFromInput);
+  const dateTo = parseDate(dateToInput);
+
+  if (!dateFrom || !dateTo) {
+    console.error('Invalid dates:', { dateFromInput, dateToInput });
+    return 'N/A';
+  }
+
+  const diff = dateTo - dateFrom;
   
   const days = Math.floor(diff / (1000 * 60 * 60 * 24));
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
