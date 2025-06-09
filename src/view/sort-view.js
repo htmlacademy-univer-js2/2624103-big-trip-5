@@ -1,16 +1,16 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
-export default class SortView {
+export default class SortView extends AbstractView {
   constructor(currentSortType) {
+    super();
     this._currentSortType = currentSortType;
-    this._element = null;
+    this._callback = {}; 
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
   }
 
-  getTemplate() {
+  get template() {
     return `
       <form class="trip-events__trip-sort trip-sort" action="#" method="get">
-        <!-- Варианты сортировки -->
         <div class="trip-sort__item trip-sort__item--day">
           <input 
             id="sort-day" 
@@ -23,7 +23,6 @@ export default class SortView {
           <label class="trip-sort__btn" for="sort-day">Day</label>
         </div>
 
-        <!-- Остальные варианты (time, price) -->
         <div class="trip-sort__item trip-sort__item--time">
           <input 
             id="sort-time" 
@@ -53,24 +52,14 @@ export default class SortView {
 
   setSortTypeChangeHandler(callback) {
     this._callback.sortTypeChange = callback;
-    this.getElement().addEventListener('click', this._handleSortTypeChange);
+    this.element.addEventListener('change', this._handleSortTypeChange);
   }
 
   _handleSortTypeChange(evt) {
     if (evt.target.tagName !== 'INPUT') {
       return;
     }
+    evt.preventDefault();
     this._callback.sortTypeChange(evt.target.value);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

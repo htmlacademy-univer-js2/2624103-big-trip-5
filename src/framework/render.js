@@ -1,5 +1,5 @@
 //новый
-import AbstractView from '../src/framework/view/abstract-view.js';
+import AbstractView from './view/abstract-view.js';
 
 /** @enum {string} Перечисление возможных позиций для отрисовки */
 const RenderPosition = {
@@ -45,15 +45,18 @@ function render(component, container, place = RenderPosition.BEFOREEND) {
  * @param {AbstractView} oldComponent Компонент, который нужно скрыть
  */
 function replace(newComponent, oldComponent) {
+  if (!(newComponent instanceof AbstractView && oldComponent instanceof AbstractView)) {
+    throw new Error('Can replace only components');
+  }
+
   const parent = oldComponent.element.parentElement;
   if (!parent) {
-    throw new Error('Can\'t replace unexisting parent');
+    throw new Error('Parent element doesn\'t exist');
   }
-  
- parent.replaceChild(newComponent.element, oldComponent.element);
-  oldComponent.removeElement();
-}
 
+  parent.replaceChild(newComponent.element, oldComponent.element);
+  oldComponent.removeElement(); // Важно удалить старый компонент
+}
 
 /**
  * Функция для удаления компонента

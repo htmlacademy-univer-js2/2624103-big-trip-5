@@ -1,18 +1,18 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 import {formatDate, getTripTitle, calculateTotalPrice} from '../utils/trip';
 
-export default class TripInfoView {
+export default class TripInfoView extends AbstractView {
   constructor(events, destinations) {
+    super();
     this._events = events;
     this._destinations = destinations;
-    this._element = null;
   }
 
-  getTemplate() {
+  get template() {
     if (this._events.length === 0) {
       return '<div></div>';
     }
-
+    
     const sortedEvents = [...this._events].sort((a, b) => a.dateFrom - b.dateFrom);
     const startDate = sortedEvents[0].dateFrom;
     const endDate = sortedEvents[sortedEvents.length - 1].dateTo;
@@ -28,16 +28,5 @@ export default class TripInfoView {
         </p>
       </section>
     `;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

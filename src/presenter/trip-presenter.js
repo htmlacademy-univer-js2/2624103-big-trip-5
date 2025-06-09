@@ -1,4 +1,4 @@
-import {render, RenderPosition} from '../render';
+
 import FiltersView from '../view/filters-view';
 import SortView from '../view/sort-view';
 import EventEditView from '../view/event-edit-view';
@@ -7,7 +7,7 @@ import TripInfoView from '../view/trip-info-view';
 import NewEventButtonView from '../view/new-event-button-view';
 import EmptyListView from '../view/empty-list-view';
 import {DEFAULT_EVENT} from '../const';
-
+import {render, replace, RenderPosition} from '../render';
 const SortType = {
   DAY: 'day',
   TIME: 'time',
@@ -15,12 +15,17 @@ const SortType = {
 };
 
 export default class TripPresenter {
-  constructor(tripContainer, eventsModel, destinationsModel, offersModel) {
-    this._tripContainer = tripContainer;
-    this._eventsModel = eventsModel;
-    this._destinationsModel = destinationsModel;
-    this._offersModel = offersModel;
-    
+  
+constructor(containers, eventsModel, destinationsModel, offersModel) {
+  if (!containers.eventsContainer || !containers.mainContainer) {
+    throw new Error('Containers not provided');
+  }
+  this._eventsContainer = containers.eventsContainer;
+  this._mainContainer = containers.mainContainer;
+  this._eventsModel = eventsModel; // Добавьте эту строку, если её нет
+  this._destinationsModel = destinationsModel;
+  this._offersModel = offersModel;
+  
     this._currentSortType = SortType.DAY;
     this._tripInfoComponent = null;
     this._filtersComponent = null;
@@ -29,20 +34,26 @@ export default class TripPresenter {
     
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
     this._handleNewEventClick = this._handleNewEventClick.bind(this);
-  }
+    
 
-  init() {
-     console.log('Проверка данных:', {
-    events: this._eventsModel.getEvents(),
+     this._currentEventComponent = null;
+    this._currentEditForm = null;
+  }
+init() {
+  console.log('Trip container:', this._eventsContainer);
+  console.log('List element:', this._eventsContainer.querySelector('.trip-events__list'));
+  console.log('Проверка данных:', {
+    events: this._eventsModel.getEvents(), // Используем eventsModel вместо eventsContainer
     destinations: this._destinationsModel.getDestinations(),
     offers: this._offersModel.getOffers()
   });
-    this._renderTripInfo();
-    this._renderFilters();
-    this._renderSort();
-    this._renderEventsList();
-    this._renderNewEventButton();
-  }
+  this._renderTripInfo();
+  this._renderFilters();
+  this._renderSort();
+  this._renderEventsList();
+  this._renderNewEventButton();
+}
+
 
 showTestEditForm() {
   this._clearEventsList();
@@ -53,11 +64,16 @@ showTestEditForm() {
       this._destinationsModel,
       this._offersModel
     ),
-    this._tripContainer.querySelector('.trip-events__list')
+    this._eventsContainer.querySelector('.trip-events__list')
   );
 }
   _renderTripInfo() {
-    const container = this._tripContainer.querySelector('.trip-main__trip-info');
+    const container = this._mainContainer.querySelector('.trip-main__trip-info');
+    if (!container) {
+      console.error('Trip info container not found');
+      return;
+    }
+    
     const events = this._eventsModel.getEvents();
     const destinations = this._destinationsModel.getDestinations();
     
@@ -66,8 +82,15 @@ showTestEditForm() {
     render(this._tripInfoComponent, container);
   }
 
+  _renderNewEventButton() {
+    this._newEventButtonComponent = new NewEventButtonView();
+    render(this._newEventButtonComponent, this._mainContainer);
+    this._newEventButtonComponent.getElement()
+      .addEventListener('click', this._handleNewEventClick);
+  }
+
   _renderFilters() {
-  const filtersContainer = this._tripContainer.querySelector('.trip-controls__filters');
+  const filtersContainer = this._eventsContainer.querySelector('.trip-controls__filters');
   if (!filtersContainer) {
     return;
   }
@@ -82,7 +105,7 @@ showTestEditForm() {
 }
 
   _renderSort() {
-     const sortContainer = this._tripContainer.querySelector('.trip-events__trip-sort');
+     const sortContainer = this._eventsContainer.querySelector('.trip-events__trip-sort');
     
     if (!sortContainer) {
     return;
@@ -92,29 +115,23 @@ showTestEditForm() {
   render(this._sortComponent, sortContainer);
   }
 
-_renderEventsList() {
-  const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
-  if (!eventsListElement) {
-    return;
+#escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' && this._editFormComponent) {
+      evt.preventDefault();
+      this.#replaceFormToEvent();
+    }
+  };
+
+  #replaceFormToEvent() {
+    if (this._editFormComponent && this._eventComponent) {
+      replace(this._eventComponent, this._editFormComponent);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this._editFormComponent = null;
+    }
   }
-  eventsListElement.innerHTML = '';
-  const events = this._eventsModel.getEvents();
-  const destinations = this._destinationsModel.getDestinations();
-  const offers = this._offersModel.getOffers();
-  if (events.length === 0) {
-    render(new EmptyListView(), eventsListElement);
-  } else {
-    render(
-      new EventEditView(events[0], destinations, offers),
-      eventsListElement
-    );
-    events.slice(0, 3).forEach(event => {
-      render(new EventView(event), eventsListElement);
-    });
-  }
-}
+
   _renderNewEventButton() {
-     const container = this._tripContainer.querySelector('.trip-main');
+     const container = this._eventsContainer.querySelector('.trip-main');
   if (!container) {
     return;
   } 
@@ -131,20 +148,30 @@ _renderEventsList() {
   }
 
  _handleNewEventClick() {
-  const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
-  eventsListElement.innerHTML = '';
-  render(
-    new EventEditView(
+  this.#replaceFormToEvent(); // Закрываем открытые формы
+    
+    const eventsListElement = this._eventsContainer.querySelector('.trip-events__list');
+    if (!eventsListElement) return;
+    
+    const newEventForm = new EventEditView(
       DEFAULT_EVENT,
       this._destinationsModel,
-      this._offersModel 
-    ),
-    eventsListElement
-  );
-}
+      this._offersModel
+    );
+    
+    newEventForm.setCloseHandler(() => {
+      this._renderEventsList();
+    });
+    
+    eventsListElement.innerHTML = '';
+    render(newEventForm, eventsListElement);
+    this._editFormComponent = newEventForm;
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+  }
 
   _clearEventsList() {
-    this._tripContainer.querySelector('.trip-events__list').innerHTML = '';
+   const list = this._eventsContainer.querySelector('.trip-events__list'); 
+  if (list) list.innerHTML = '';
   }
 
   _getSortedEvents() {
@@ -157,21 +184,87 @@ _renderEventsList() {
       return this._eventsModel.getEventsSortedByDay();
     }
   }
-  _renderEventsList() {
-  const eventsListElement = this._tripContainer.querySelector('.trip-events__list');
-  if (!eventsListElement) return;
-  
-  eventsListElement.innerHTML = '';
-  const events = this._getSortedEvents(); // Используем новый метод
-  const destinations = this._destinationsModel.getDestinations();
-  const offers = this._offersModel.getOffers();
-
-  if (events.length === 0) {
-    render(new EmptyListView(), eventsListElement);
-  } else {
-    events.forEach(event => {
-      render(new EventView(event, this._destinationsModel, this._offersModel), eventsListElement);
-    });
+    _renderEventsList() {
+  const eventsListElement = this._eventsContainer.querySelector('.trip-events__list');
+  if (!eventsListElement) {
+    console.error('Events list container not found');
+    return;
   }
+
+  eventsListElement.innerHTML = '';
+
+  // Получаем события через модель
+  const events = this._getSortedEvents();
+  console.log('Rendering events:', events); // Логирование для отладки
+
+  events.forEach(event => {
+    const eventComponent = new EventView(event, this._destinationsModel, this._offersModel);
+    
+    // Проверка кнопки в DOM
+    render(eventComponent, eventsListElement);
+    const rollupBtn = eventComponent.element.querySelector('.event__rollup-btn');
+    console.log('Rollup button exists:', !!rollupBtn);
+
+    // Устанавливаем обработчик
+    eventComponent.setRollupClickHandler(() => {
+      console.log('Rollup clicked for event:', event.id);
+      this._openEditForm(event, eventComponent);
+    });
+  });
 }
+ _openEditForm(event, eventComponent) {
+  if (this._currentEditForm) {
+    this._replaceFormToEvent();
+  }
+
+  const editFormComponent = new EventEditView(
+    event,
+    this._destinationsModel,
+    this._offersModel
+  );
+
+  editFormComponent.setCloseHandler(() => this._replaceFormToEvent());
+  editFormComponent.setSubmitHandler((updatedEvent) => { // Исправленное имя метода
+    this._handleEventChange(updatedEvent);
+    this._replaceFormToEvent();
+  });
+  
+  editFormComponent.setDeleteHandler((eventId) => {
+    this._eventsModel.deleteEvent(eventId);
+    this._renderTripInfo();
+    this._renderEventsList();
+  });
+
+  this._currentEventComponent = eventComponent;
+  this._currentEditForm = editFormComponent;
+
+  replace(editFormComponent, eventComponent);
+  document.addEventListener('keydown', this._escKeyDownHandler);
+}
+
+
+_handleEventChange(updatedEvent) {
+  this._eventsModel.updateEvent(updatedEvent);
+  this._renderTripInfo(); 
+}
+
+_replaceFormToEvent() {
+  if (!this._currentEventComponent || !this._currentEditForm) return;
+  
+  replace(this._currentEventComponent, this._currentEditForm);
+  document.removeEventListener('keydown', this._escKeyDownHandler);
+  
+  // Очищаем ссылки
+  this._currentEditForm = null;
+  this._currentEventComponent = null;
+}
+
+  
+_escKeyDownHandler = (evt) => {
+  if (evt.key === 'Escape' && this._currentEditForm) {
+    evt.preventDefault();
+    this.#replaceFormToEvent();
+  }
+};
+
 }

@@ -1,12 +1,12 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
-export default class EmptyListView {
+export default class EmptyListView extends AbstractView {
   constructor(filterType = 'everything') {
+    super();
     this._filterType = filterType;
-    this._element = null;
   }
 
-  getTemplate() {
+  get template() {
     const messages = {
       everything: 'Click New Event to create your first point',
       future: 'There are no future events now',
@@ -14,19 +14,6 @@ export default class EmptyListView {
       present: 'There are no present events now'
     };
 
-    return `
-      <p class="trip-events__msg">${messages[this._filterType]}</p>
-    `;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
+    return `<p class="trip-events__msg">${messages[this._filterType]}</p>`;
   }
 }

@@ -21,7 +21,7 @@ export const EVENTS = [
   },
   {
     id: '3',
-    type: 'hotel',
+    type: 'drive',
     destination: 'chx',
      dateFrom: '2024-06-10T10:00:00', 
     dateTo: '2024-06-10T11:00:00',  

@@ -5,34 +5,57 @@ import OffersModel from './model/offers-model';
 import { DESTINATIONS, OFFERS, EVENTS } from './mock';
 
 document.addEventListener('DOMContentLoaded', () => {
+  // 1. Находим основные контейнеры
   const tripMainContainer = document.querySelector('.trip-main');
-  if (!tripMainContainer) {
-    console.error('Контейнер .trip-main не найден!');
+  const tripEventsContainer = document.querySelector('.trip-events');
+  
+  // 2. Проверяем наличие контейнеров
+  if (!tripMainContainer || !tripEventsContainer) {
+    console.error('Ошибка: не найдены необходимые контейнеры');
+    console.log('tripMainContainer:', tripMainContainer);
+    console.log('tripEventsContainer:', tripEventsContainer);
     return;
   }
 
- 
+  // 3. Инициализация моделей
   const destinationsModel = new DestinationsModel();
   const offersModel = new OffersModel();
   const eventsModel = new EventsModel();
 
-  
-  destinationsModel.setDestinations(DESTINATIONS);
-  offersModel.setOffers(OFFERS);
-  eventsModel.setEvents(EVENTS); 
+  // 4. Загрузка данных в модели
+  try {
+    destinationsModel.setDestinations(DESTINATIONS);
+    offersModel.setOffers(OFFERS);
+    eventsModel.setEvents(EVENTS);
+    
+    // 5. Связывание моделей
+    eventsModel.setDestinationsModel(destinationsModel);
+    eventsModel.setOffersModel(offersModel);
+  } catch (error) {
+    console.error('Ошибка при загрузке данных:', error);
+    return;
+  }
 
-  
-  eventsModel.setDestinationsModel(destinationsModel);
-  eventsModel.setOffersModel(offersModel);
+  // 6. Проверка данных перед инициализацией
+  console.log('Проверка данных перед инициализацией:');
+  console.log('Destinations:', destinationsModel.getDestinations());
+  console.log('Offers:', offersModel.getOffers());
+  console.log('Events:', eventsModel.getEvents());
 
- const tripPresenter = new TripPresenter(
-  tripMainContainer,
-  eventsModel,
-  destinationsModel,
-  offersModel
-);
-tripPresenter.init();
-
-
-tripPresenter.showTestEditForm();
+  // 7. Инициализация презентера
+  try {
+  const tripPresenter = new TripPresenter(
+    {
+      eventsContainer: tripEventsContainer,
+      mainContainer: tripMainContainer
+    },
+    eventsModel,
+    destinationsModel,
+    offersModel
+  );
+  tripPresenter.init();
+  console.log('Презентер успешно инициализирован');
+} catch (error) {
+  console.error('Ошибка при инициализации презентера:', error);
+}
 });

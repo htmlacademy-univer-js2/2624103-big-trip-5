@@ -6,10 +6,10 @@ export default class EventsModel {
   }
    setEvents(events) {
     this._events = events.map(event => ({
-      ...event,
-      dateFrom: new Date(event.dateFrom),
-      dateTo: new Date(event.dateTo)
-    }));
+    ...event,
+    dateFrom: new Date(event.dateFrom),
+    dateTo: new Date(event.dateTo)
+  }));
   }
 
   setDestinationsModel(model) {
@@ -21,12 +21,19 @@ export default class EventsModel {
   }
 
   getEvents() {
-  return this._events.map(event => ({
-    ...event,
-    destination: this._destinationsModel.getDestinationById(event.destination), 
-    offers: this._offersModel.getOffersByType(event.type)
-      .filter(offer => event.offers.includes(offer.id))
-  }));
+  return this._events.map(event => {
+    const destination = this._destinationsModel.getDestinationById(event.destination);
+    if (!destination) {
+      console.warn(`Destination not found for event ${event.id}: ${event.destination}`);
+      return null; // или вернуть event с флагом ошибки
+    }
+    return {
+      ...event,
+      destination: destination,
+      offers: this._offersModel.getOffersByType(event.type)
+        .filter(offer => event.offers.includes(offer.id))
+    };
+  }).filter(Boolean); 
 }
 
   addEvent(event) {

@@ -1,26 +1,11 @@
-import {createElement} from '../render';
+import AbstractView from '../framework/view/abstract-view.js';
 
-export default class NewEventButtonView {
-  constructor() {
-    this._element = null;
-  }
-
-  getTemplate() {
+export default class NewEventButtonView extends AbstractView {
+  get template() {
     return `
-      <button class="trip-main__event-add-btn  btn  btn--big  btn--yellow" type="button">
+      <button class="trip-main__event-add-btn btn btn--big btn--yellow" type="button">
         <span class="visually-hidden">New event</span>+ New event
       </button>
     `;
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

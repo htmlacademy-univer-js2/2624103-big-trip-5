@@ -14,7 +14,7 @@ export const OFFERS = [
     ]
   },
   {
-    type: 'hotel',
+    type: 'drive',
     offers: [
       { id: 1, title: 'Завтрак', price: 15 },
       { id: 2, title: 'Улучшенный номер', price: 80 }
