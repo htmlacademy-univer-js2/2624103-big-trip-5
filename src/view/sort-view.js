@@ -1,9 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 export default class SortView extends AbstractView {
-export default class SortView extends AbstractView {
   constructor(currentSortType) {
-    super();
     super();
     this._currentSortType = currentSortType;
     this._callback = {}; 
