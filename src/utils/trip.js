@@ -1,3 +1,7 @@
+export const formatDate = (date) => {
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+};
+
 export const getTripTitle = (events, destinations) => {
     if (events.length === 0) return '';
     
