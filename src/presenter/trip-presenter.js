@@ -22,7 +22,7 @@ constructor(containers, eventsModel, destinationsModel, offersModel) {
   }
   this._eventsContainer = containers.eventsContainer;
   this._mainContainer = containers.mainContainer;
-  this._eventsModel = eventsModel; // Добавьте эту строку, если её нет
+  this._eventsModel = eventsModel; 
   this._destinationsModel = destinationsModel;
   this._offersModel = offersModel;
   
@@ -43,7 +43,7 @@ init() {
   console.log('Trip container:', this._eventsContainer);
   console.log('List element:', this._eventsContainer.querySelector('.trip-events__list'));
   console.log('Проверка данных:', {
-    events: this._eventsModel.getEvents(), // Используем eventsModel вместо eventsContainer
+    events: this._eventsModel.getEvents(), 
     destinations: this._destinationsModel.getDestinations(),
     offers: this._offersModel.getOffers()
   });
@@ -57,7 +57,7 @@ init() {
 
 showTestEditForm() {
   this._clearEventsList();
-  const testEvent = this._eventsModel.getEvents()[0]; // Берём первое событие
+  const testEvent = this._eventsModel.getEvents()[0]; 
   render(
     new EventEditView(
       testEvent,
@@ -148,7 +148,7 @@ showTestEditForm() {
   }
 
  _handleNewEventClick() {
-  this.#replaceFormToEvent(); // Закрываем открытые формы
+  this.#replaceFormToEvent(); 
     
     const eventsListElement = this._eventsContainer.querySelector('.trip-events__list');
     if (!eventsListElement) return;
@@ -180,7 +180,7 @@ showTestEditForm() {
       return this._eventsModel.getEventsSortedByTime();
     case SortType.PRICE:
       return this._eventsModel.getEventsSortedByPrice();
-    default: // DAY
+    default: 
       return this._eventsModel.getEventsSortedByDay();
     }
   }
@@ -218,7 +218,7 @@ showTestEditForm() {
   );
 
   editFormComponent.setCloseHandler(() => this._replaceFormToEvent());
-  editFormComponent.setSubmitHandler((updatedEvent) => { // Исправленное имя метода
+  editFormComponent.setSubmitHandler((updatedEvent) => { 
     this._handleEventChange(updatedEvent);
     this._replaceFormToEvent();
   });
