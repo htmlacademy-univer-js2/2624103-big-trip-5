@@ -18,13 +18,13 @@ export default class TripInfoView extends AbstractView {
     const endDate = sortedEvents[sortedEvents.length - 1].dateTo;
 
     return `
-      <section class="trip-main__trip-info trip-info">
+      <section class="trip-main__trip-info  trip-info">
         <div class="trip-info__main">
-          <h1 class="trip-info__title">${getTripTitle(sortedEvents, this.#destinations)}</h1>
+          <h1 class="trip-info__title">${getTripTitle(sortedEvents, this._destinations)}</h1>
           <p class="trip-info__dates">${formatDate(startDate)}&nbsp;&mdash;&nbsp;${formatDate(endDate)}</p>
         </div>
         <p class="trip-info__cost">
-          Total: &euro;&nbsp;<span class="trip-info__cost-value">${calculateTotalPrice(this.#events)}</span>
+          Total: &euro;&nbsp;<span class="trip-info__cost-value">${calculateTotalPrice(this._events)}</span>
         </p>
       </section>
     `;
