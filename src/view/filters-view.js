@@ -8,9 +8,10 @@ export default class FiltersView extends AbstractView {
   }
 
   get template() {
+  get template() {
     return `
       <form class="trip-filters" action="#" method="get">
-        ${this._filters.map((filter) => `
+        ${this.#filters.map((filter) => `
           <div class="trip-filters__filter">
             <input 
               id="filter-${filter.type}" 

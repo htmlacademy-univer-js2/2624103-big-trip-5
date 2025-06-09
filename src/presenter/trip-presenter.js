@@ -192,20 +192,14 @@ showTestEditForm() {
   }
 
   eventsListElement.innerHTML = '';
-
-  // Получаем события через модель
   const events = this._getSortedEvents();
-  console.log('Rendering events:', events); // Логирование для отладки
+  console.log('Rendering events:', events); 
 
   events.forEach(event => {
     const eventComponent = new EventView(event, this._destinationsModel, this._offersModel);
-    
-    // Проверка кнопки в DOM
     render(eventComponent, eventsListElement);
     const rollupBtn = eventComponent.element.querySelector('.event__rollup-btn');
     console.log('Rollup button exists:', !!rollupBtn);
-
-    // Устанавливаем обработчик
     eventComponent.setRollupClickHandler(() => {
       console.log('Rollup clicked for event:', event.id);
       this._openEditForm(event, eventComponent);
@@ -253,13 +247,9 @@ _replaceFormToEvent() {
   
   replace(this._currentEventComponent, this._currentEditForm);
   document.removeEventListener('keydown', this._escKeyDownHandler);
-  
-  // Очищаем ссылки
   this._currentEditForm = null;
   this._currentEventComponent = null;
 }
-
-  
 _escKeyDownHandler = (evt) => {
   if (evt.key === 'Escape' && this._currentEditForm) {
     evt.preventDefault();

@@ -14,7 +14,6 @@ export default class EventView extends AbstractStatefulView {
   get template() {
     const { type, destination, dateFrom, dateTo, basePrice, isFavorite, offers } = this._state;
   
-  // Если destination уже объект (из EventsModel)
   const destinationData = typeof destination === 'object' 
     ? destination 
     : this._destinationsModel.getDestinationById(destination);

@@ -273,4 +273,5 @@ setDeleteHandler(callback) {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     super.removeElement();
   }
+  
 }
