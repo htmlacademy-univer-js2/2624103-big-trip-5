@@ -1,50 +1,57 @@
-// src/utils/date.js
+const parseDate = (dateInput) => {
+  if (dateInput instanceof Date) {
+    return isNaN(dateInput.getTime()) ? null : dateInput;
+  }
+  const date = new Date(dateInput);
+  return isNaN(date.getTime()) ? null : date;
+};
 
-export const formatDate = (date) => {
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric'
-    }).toUpperCase();
-  };
+export const formatDate = (dateInput) => {
+  const date = parseDate(dateInput);
+  if (!date) {
+    console.error('Invalid date input:', dateInput);
+    return 'N/A';
+  }
   
-  export const formatTime = (date) => {
-    return date.toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+export const formatTime = (dateInput) => {
+  const date = parseDate(dateInput);
+  if (!date) {
+    console.error('Invalid date input:', dateInput);
+    return 'N/A';
+  }
   
-  export const formatDateTime = (date) => {
-    return date.toISOString().slice(0, 16);
-  };
+  return date.toLocaleTimeString('en-US', {
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+};
+
+export const calculateDuration = (dateFromInput, dateToInput) => {
+  const dateFrom = parseDate(dateFromInput);
+  const dateTo = parseDate(dateToInput);
+
+  if (!dateFrom || !dateTo) {
+    console.error('Invalid dates:', { dateFromInput, dateToInput });
+    return 'N/A';
+  }
+
+  const diff = dateTo - dateFrom;
   
-  export const calculateDuration = (startDate, endDate) => {
-    const diff = endDate - startDate;
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor (diff / (1000 * 60 * 60)) % 24;
-    const minutes = Math.floor (diff / (1000 * 60)) % 60;
-  
-    if (days > 0) {
-      return `${days}D ${hours}H ${minutes}M`;
-    } else if (hours > 0) {
-      return `${hours}H ${minutes}M`;
-    }
-    return `${minutes}M`;
-  };
-  
-  export const getDefaultDates = () => {
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    endDate.setHours(startDate.getHours() + 1);
-    return { startDate, endDate };
-  };
-  
-  export const isDatesEqual = (dateA, dateB) => {
-    if (dateA === null && dateB === null) {
-      return true;
-    }
-  
-    return dateA instanceof Date && dateB instanceof Date 
-      ? dateA.getTime() === dateB.getTime() 
-      : false;
-  };
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+  if (days > 0) {
+    return `${days}D ${hours}H ${minutes}M`;
+  }
+  if (hours > 0) {
+    return `${hours}H ${minutes}M`;
+  }
+  return `${minutes}M`;
+};

@@ -1,255 +1,260 @@
-import { render, RenderPosition } from '../render';
+
 import FiltersView from '../view/filters-view';
 import SortView from '../view/sort-view';
 import EventEditView from '../view/event-edit-view';
 import EventView from '../view/event-view';
 import TripInfoView from '../view/trip-info-view';
 import NewEventButtonView from '../view/new-event-button-view';
-import { DEFAULT_EVENT, FilterType, SortType } from '../const';
+import EmptyListView from '../view/empty-list-view';
+import {DEFAULT_EVENT} from '../const';
+import {render, replace, RenderPosition} from '../render';
+const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price'
+};
 
 export default class TripPresenter {
-  #tripContainer = null;
-  #eventsModel = null;
-  #destinationsModel = null;
-  #offersModel = null;
-
-  #tripInfoComponent = null;
-  #filtersComponent = null;
-  #sortComponent = null;
-  #newEventButtonComponent = null;
-  #currentFilter = FilterType.EVERYTHING;
-  #currentSort = SortType.DAY;
-
-  constructor(tripContainer, eventsModel, destinationsModel, offersModel) {
-    this.#tripContainer = tripContainer;
-    this.#eventsModel = eventsModel;
-    this.#destinationsModel = destinationsModel;
-    this.#offersModel = offersModel;
-  }
-
-  init() {
-    this.#renderTripInfo();
-    this.#renderFilters();
-    this.#renderSort();
-    this.#renderEventsList();
-    this.#renderNewEventButton();
-  }
-
-  #renderTripInfo() {
-    const events = this.#eventsModel.getEvents();
-    const destinations = this.#destinationsModel.getDestinations();
-    
-    this.#tripInfoComponent = new TripInfoView({
-      events,
-      destinations
-    });
-    
-    render(this.#tripInfoComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
-  }
-
-  #renderFilters() {
-    const events = this.#eventsModel.getEvents();
-    
-    const filters = [
-      {
-        type: FilterType.EVERYTHING,
-        name: 'Everything',
-        count: events.length
-      },
-      {
-        type: FilterType.FUTURE,
-        name: 'Future',
-        count: this.#eventsModel.getFutureEvents().length
-      },
-      {
-        type: FilterType.PAST,
-        name: 'Past',
-        count: this.#eventsModel.getPastEvents().length
-      }
-    ];
-    
-    this.#filtersComponent = new FiltersView({
-      filters,
-      currentFilter: this.#currentFilter,
-      onFilterChange: this.#handleFilterTypeChange
-    });
-    
-    render(
-      this.#filtersComponent,
-      this.#tripContainer.querySelector('.trip-controls__filters')
-    );
-  }
-
-  #renderSort() {
-    this.#sortComponent = new SortView({
-      currentSortType: this.#currentSort,
-      onSortTypeChange: this.#handleSortTypeChange
-    });
-    
-    render(
-      this.#sortComponent,
-      this.#tripContainer.querySelector('.trip-events'),
-      RenderPosition.AFTERBEGIN
-    );
-  }
-
-  #renderEventsList() {
-    const eventsListElement = this.#tripContainer.querySelector('.trip-events__list');
-    const events = this.#getSortedEvents(this.#getFilteredEvents());
-    const destinations = this.#destinationsModel.getDestinations();
-    const offers = this.#offersModel.getOffers();
-
   
-    const firstEvent = events[0];
-    if (firstEvent) {
-      render(
-        new EventEditView({
-          event: firstEvent,
-          destinations,
-          offers,
-          onFormSubmit: this.#handleEventUpdate,
-          onDeleteClick: this.#handleEventDelete,
-          onCloseClick: this.#handleCloseEditForm
-        }),
-        eventsListElement
-      );
-    }
-
+constructor(containers, eventsModel, destinationsModel, offersModel) {
+  if (!containers.eventsContainer || !containers.mainContainer) {
+    throw new Error('Containers not provided');
+  }
+  this._eventsContainer = containers.eventsContainer;
+  this._mainContainer = containers.mainContainer;
+  this._eventsModel = eventsModel; 
+  this._destinationsModel = destinationsModel;
+  this._offersModel = offersModel;
+  
+    this._currentSortType = SortType.DAY;
+    this._tripInfoComponent = null;
+    this._filtersComponent = null;
+    this._sortComponent = null;
+    this._newEventButtonComponent = null;
     
-    events.slice(1, 4).forEach((event) => {
-      render(
-        new EventView({
-          event,
-          destination: this.#destinationsModel.getDestinationById(event.destination),
-          offers: this.#offersModel.getOffersByType(event.type)
-            .filter((offer) => event.offers.includes(offer.id)),
-          onEditClick: () => this.#handleEditClick(event),
-          onFavoriteClick: () => this.#handleFavoriteToggle(event)
-        }),
-        eventsListElement
-      );
-    });
+    this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._handleNewEventClick = this._handleNewEventClick.bind(this);
+    
+
+     this._currentEventComponent = null;
+    this._currentEditForm = null;
+  }
+init() {
+  console.log('Trip container:', this._eventsContainer);
+  console.log('List element:', this._eventsContainer.querySelector('.trip-events__list'));
+  console.log('Проверка данных:', {
+    events: this._eventsModel.getEvents(), 
+    destinations: this._destinationsModel.getDestinations(),
+    offers: this._offersModel.getOffers()
+  });
+  this._renderTripInfo();
+  this._renderFilters();
+  this._renderSort();
+  this._renderEventsList();
+  this._renderNewEventButton();
+}
+
+
+showTestEditForm() {
+  this._clearEventsList();
+  const testEvent = this._eventsModel.getEvents()[0]; 
+  render(
+    new EventEditView(
+      testEvent,
+      this._destinationsModel,
+      this._offersModel
+    ),
+    this._eventsContainer.querySelector('.trip-events__list')
+  );
+}
+  _renderTripInfo() {
+    const container = this._mainContainer.querySelector('.trip-main__trip-info');
+    if (!container) {
+      console.error('Trip info container not found');
+      return;
+    }
+    
+    const events = this._eventsModel.getEvents();
+    const destinations = this._destinationsModel.getDestinations();
+    
+    container.innerHTML = '';
+    this._tripInfoComponent = new TripInfoView(events, destinations);
+    render(this._tripInfoComponent, container);
   }
 
-  #renderNewEventButton() {
-    this.#newEventButtonComponent = new NewEventButtonView({
-      onClick: this.#handleNewEventClick
-    });
+  _renderNewEventButton() {
+    this._newEventButtonComponent = new NewEventButtonView();
+    render(this._newEventButtonComponent, this._mainContainer);
+    this._newEventButtonComponent.getElement()
+      .addEventListener('click', this._handleNewEventClick);
+  }
+
+  _renderFilters() {
+  const filtersContainer = this._eventsContainer.querySelector('.trip-controls__filters');
+  if (!filtersContainer) {
+    return;
+  }
+  filtersContainer.innerHTML = '';
+  const filters = [
+    { type: 'everything', name: 'Everything', count: this._eventsModel.getEvents().length },
+    { type: 'future', name: 'Future', count: this._eventsModel.getFutureEvents().length },
+    { type: 'past', name: 'Past', count: this._eventsModel.getPastEvents().length }
+  ];
+  this._filtersComponent = new FiltersView(filters, 'everything');
+  render(this._filtersComponent, filtersContainer); 
+}
+
+  _renderSort() {
+     const sortContainer = this._eventsContainer.querySelector('.trip-events__trip-sort');
     
-    render(
-      this.#newEventButtonComponent,
-      this.#tripContainer.querySelector('.trip-main')
+    if (!sortContainer) {
+    return;
+  }
+  sortContainer.innerHTML = '';
+  this._sortComponent = new SortView(this._currentSortType);
+  render(this._sortComponent, sortContainer);
+  }
+
+#escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' && this._editFormComponent) {
+      evt.preventDefault();
+      this.#replaceFormToEvent();
+    }
+  };
+
+  #replaceFormToEvent() {
+    if (this._editFormComponent && this._eventComponent) {
+      replace(this._eventComponent, this._editFormComponent);
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this._editFormComponent = null;
+    }
+  }
+
+  _renderNewEventButton() {
+     const container = this._eventsContainer.querySelector('.trip-main');
+  if (!container) {
+    return;
+  } 
+  this._newEventButtonComponent = new NewEventButtonView();
+  render(this._newEventButtonComponent, container);
+  this._newEventButtonComponent.getElement()
+    .addEventListener('click', this._handleNewEventClick);
+  }
+
+  _handleSortTypeChange(sortType) {
+    this._currentSortType = sortType;
+    this._clearEventsList();
+    this._renderEventsList();
+  }
+
+ _handleNewEventClick() {
+  this.#replaceFormToEvent(); 
+    
+    const eventsListElement = this._eventsContainer.querySelector('.trip-events__list');
+    if (!eventsListElement) return;
+    
+    const newEventForm = new EventEditView(
+      DEFAULT_EVENT,
+      this._destinationsModel,
+      this._offersModel
     );
-  }
-
-  #getFilteredEvents() {
-    switch (this.#currentFilter) {
-      case FilterType.FUTURE:
-        return this.#eventsModel.getFutureEvents();
-      case FilterType.PAST:
-        return this.#eventsModel.getPastEvents();
-      default:
-        return this.#eventsModel.getEvents();
-    }
-  }
-
-  #getSortedEvents(events) {
-    switch (this.#currentSort) {
-      case SortType.TIME:
-        return [...events].sort((a, b) => (b.dateTo - b.dateFrom) - (a.dateTo - a.dateFrom));
-      case SortType.PRICE:
-        return [...events].sort((a, b) => b.basePrice - a.basePrice);
-      default:
-        return [...events].sort((a, b) => a.dateFrom - b.dateFrom);
-    }
-  }
-
-  #handleFilterTypeChange = (filterType) => {
-    this.#currentFilter = filterType;
-    this.#clearEventsList();
-    this.#renderEventsList();
-  };
-
-  #handleSortTypeChange = (sortType) => {
-    this.#currentSort = sortType;
-    this.#clearEventsList();
-    this.#renderEventsList();
-  };
-
-  #handleNewEventClick = () => {
-    const eventsListElement = this.#tripContainer.querySelector('.trip-events__list');
     
-    render(
-      new EventEditView({
-        event: DEFAULT_EVENT,
-        destinations: this.#destinationsModel.getDestinations(),
-        offers: this.#offersModel.getOffers(),
-        onFormSubmit: this.#handleEventAdd,
-        onDeleteClick: this.#handleCloseEditForm,
-        onCloseClick: this.#handleCloseEditForm
-      }),
-      eventsListElement,
-      RenderPosition.AFTERBEGIN
-    );
-    
-    this.#newEventButtonComponent.element.disabled = true;
-  };
-
-  #handleEditClick = (event) => {
-    const eventsListElement = this.#tripContainer.querySelector('.trip-events__list');
-    const eventElement = eventsListElement.querySelector(`[data-id="${event.id}"]`);
-    
-    if (eventElement) {
-      replace(
-        new EventEditView({
-          event,
-          destinations: this.#destinationsModel.getDestinations(),
-          offers: this.#offersModel.getOffers(),
-          onFormSubmit: this.#handleEventUpdate,
-          onDeleteClick: this.#handleEventDelete,
-          onCloseClick: this.#handleCloseEditForm
-        }),
-        eventElement
-      );
-    }
-  };
-
-  #handleFavoriteToggle = (event) => {
-    this.#eventsModel.updateEvent({
-      ...event,
-      isFavorite: !event.isFavorite
+    newEventForm.setCloseHandler(() => {
+      this._renderEventsList();
     });
-  };
-
-  #handleEventUpdate = (updatedEvent) => {
-    this.#eventsModel.updateEvent(updatedEvent);
-    this.#clearEventsList();
-    this.#renderEventsList();
-    this.#newEventButtonComponent.element.disabled = false;
-  };
-
-  #handleEventAdd = (newEvent) => {
-    this.#eventsModel.addEvent(newEvent);
-    this.#clearEventsList();
-    this.#renderEventsList();
-    this.#newEventButtonComponent.element.disabled = false;
-  };
-
-  #handleEventDelete = (eventId) => {
-    this.#eventsModel.deleteEvent(eventId);
-    this.#clearEventsList();
-    this.#renderEventsList();
-    this.#newEventButtonComponent.element.disabled = false;
-  };
-
-  #handleCloseEditForm = () => {
-    this.#clearEventsList();
-    this.#renderEventsList();
-    this.#newEventButtonComponent.element.disabled = false;
-  };
-
-  #clearEventsList() {
-    const eventsListElement = this.#tripContainer.querySelector('.trip-events__list');
+    
     eventsListElement.innerHTML = '';
+    render(newEventForm, eventsListElement);
+    this._editFormComponent = newEventForm;
+    document.addEventListener('keydown', this.#escKeyDownHandler);
   }
+
+  _clearEventsList() {
+   const list = this._eventsContainer.querySelector('.trip-events__list'); 
+  if (list) list.innerHTML = '';
+  }
+
+  _getSortedEvents() {
+  switch (this._currentSortType) {
+    case SortType.TIME:
+      return this._eventsModel.getEventsSortedByTime();
+    case SortType.PRICE:
+      return this._eventsModel.getEventsSortedByPrice();
+    default: 
+      return this._eventsModel.getEventsSortedByDay();
+    }
+  }
+    _renderEventsList() {
+  const eventsListElement = this._eventsContainer.querySelector('.trip-events__list');
+  if (!eventsListElement) {
+    console.error('Events list container not found');
+    return;
+  }
+
+  eventsListElement.innerHTML = '';
+  const events = this._getSortedEvents();
+  console.log('Rendering events:', events); 
+
+  events.forEach(event => {
+    const eventComponent = new EventView(event, this._destinationsModel, this._offersModel);
+    render(eventComponent, eventsListElement);
+    const rollupBtn = eventComponent.element.querySelector('.event__rollup-btn');
+    console.log('Rollup button exists:', !!rollupBtn);
+    eventComponent.setRollupClickHandler(() => {
+      console.log('Rollup clicked for event:', event.id);
+      this._openEditForm(event, eventComponent);
+    });
+  });
+}
+ _openEditForm(event, eventComponent) {
+  if (this._currentEditForm) {
+    this._replaceFormToEvent();
+  }
+
+  const editFormComponent = new EventEditView(
+    event,
+    this._destinationsModel,
+    this._offersModel
+  );
+
+  editFormComponent.setCloseHandler(() => this._replaceFormToEvent());
+  editFormComponent.setSubmitHandler((updatedEvent) => { 
+    this._handleEventChange(updatedEvent);
+    this._replaceFormToEvent();
+  });
+  
+  editFormComponent.setDeleteHandler((eventId) => {
+    this._eventsModel.deleteEvent(eventId);
+    this._renderTripInfo();
+    this._renderEventsList();
+  });
+
+  this._currentEventComponent = eventComponent;
+  this._currentEditForm = editFormComponent;
+
+  replace(editFormComponent, eventComponent);
+  document.addEventListener('keydown', this._escKeyDownHandler);
+}
+
+
+_handleEventChange(updatedEvent) {
+  this._eventsModel.updateEvent(updatedEvent);
+  this._renderTripInfo(); 
+}
+
+_replaceFormToEvent() {
+  if (!this._currentEventComponent || !this._currentEditForm) return;
+  
+  replace(this._currentEventComponent, this._currentEditForm);
+  document.removeEventListener('keydown', this._escKeyDownHandler);
+  this._currentEditForm = null;
+  this._currentEventComponent = null;
+}
+_escKeyDownHandler = (evt) => {
+  if (evt.key === 'Escape' && this._currentEditForm) {
+    evt.preventDefault();
+    this.#replaceFormToEvent();
+  }
+};
+
 }

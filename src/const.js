@@ -4,31 +4,17 @@ export const EVENT_TYPES = [
   'sightseeing', 'restaurant'
 ];
 
-export const FilterType = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-  PAST: 'past'
-};
-
-export const SortType = {
-  DAY: 'day',
-  TIME: 'time',
-  PRICE: 'price'
-};
+export const DESTINATION_NAMES = [
+  'Amsterdam', 'Chamonix', 'Geneva', 
+  'Paris', 'Berlin', 'Rome'
+];
 
 export const DEFAULT_EVENT = {
-  id: '0',
   type: 'flight',
-  destination: '',
+  destination: 'geneva',
   dateFrom: new Date(),
-  dateTo: new Date(),
-  basePrice: 0,
-  offers: [],
+  dateTo: new Date(Date.now() + 3600000),
+  basePrice: 100,
+  offers: [1, 2],
   isFavorite: false
-};
-
-export const RenderPosition = {
-  AFTERBEGIN: 'afterbegin',
-  BEFOREEND: 'beforeend',
-  AFTEREND: 'afterend'
 };
