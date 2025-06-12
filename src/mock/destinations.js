@@ -33,3 +33,15 @@ export const DESTINATIONS = [
     ]
   }
 ];
+export const generateDestinations = () => {
+  const cities = ['Amsterdam', 'Geneva', 'Chamonix', 'Berlin', 'Rome', 'Paris'];
+  return cities.map((city, index) => ({
+    id: index + 1,
+    name: city,
+    description: `${city} — прекрасный город для путешествий. Подробное описание...`,
+    pictures: Array.from({ length: 3 }, (_, i) => ({
+      src: `https://loremflickr.com/248/152/${city.toLowerCase()}?random=${i}`,
+      description: `Фото ${city} ${i + 1}`
+    }))
+  }));
+};

@@ -55,3 +55,29 @@ export const calculateDuration = (dateFromInput, dateToInput) => {
   }
   return `${minutes}M`;
 };
+export const generateRandomDate = () => {
+  const now = new Date();
+  const pastDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000); 
+  const futureDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000); 
+  return new Date(pastDate.getTime() + Math.random() * (futureDate - pastDate));
+};
+
+export const formatDateRange = (dateFrom, dateTo) => {
+  try {
+    const start = new Date(dateFrom);
+    const end = new Date(dateTo);
+    
+    if (isNaN(start.getTime())) throw new Error('Invalid start date');
+    if (isNaN(end.getTime())) throw new Error('Invalid end date');
+
+    const startStr = formatDate(start);
+    const endStr = formatDate(end);
+
+    return startStr === endStr 
+      ? `${startStr}, ${formatTime(start)} – ${formatTime(end)}`
+      : `${startStr} – ${endStr}`;
+  } catch (error) {
+    console.error('Error formatting date range:', error);
+    return 'N/A';
+  }
+};

@@ -21,3 +21,25 @@ export const OFFERS = [
     ]
   }
 ];
+export const generateOffers = () => {
+  const offerTypes = {
+    taxi: ['Повысить класс', 'Детское кресло'],
+    bus: ['Кондиционер', 'Wi-Fi'],
+    train: ['Купе', 'Обед'],
+    ship: ['Каюта', 'Экскурсия'],
+    drive: ['Полный бак', 'Страховка'],
+    flight: ['Бизнес-класс', 'Доп. багаж'],
+    'check-in': ['Завтрак', 'Улучшенный номер'],
+    sightseeing: ['Гид', 'Фотосессия'],
+    restaurant: ['Дегустация', 'Вино']
+  };
+
+  return Object.entries(offerTypes).map(([type, titles]) => ({
+    type,
+    offers: titles.map((title, id) => ({
+      id: id + 1,
+      title,
+      price: Math.floor(Math.random() * 100) + 10 // Цена от 10 до 110
+    }))
+  }));
+};
