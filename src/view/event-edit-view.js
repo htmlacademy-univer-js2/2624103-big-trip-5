@@ -245,10 +245,9 @@ static parseStateToEvent(state) {
     }
   };
 #closeHandler = (evt) => {
-  console.log('Close handler triggered'); 
-    evt?.preventDefault();
-    this._callback.close();
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
+   evt?.preventDefault();
+  this._callback.close();
+  document.removeEventListener('keydown', this.#escKeyDownHandler)
   };
 
   setCloseHandler(callback) {
@@ -270,8 +269,8 @@ setDeleteHandler(callback) {
   }
 
   removeElement() {
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-    super.removeElement();
+   document.removeEventListener('keydown', this.#escKeyDownHandler);
+  super.removeElement();
   }
   
 }

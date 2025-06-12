@@ -30,3 +30,24 @@ export const EVENTS = [
     isFavorite: false
   }
 ];
+import { generateRandomDate } from '../utils/date.js';
+
+export const generateEvents = (count, destinations) => {
+  const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+  
+  return Array.from({ length: count }, (_, i) => {
+    const dateFrom = generateRandomDate();
+    const dateTo = new Date(dateFrom.getTime() + Math.random() * 48 * 60 * 60 * 1000); // +0-48 часов
+    
+    return {
+      id: i + 1,
+      type: types[Math.floor(Math.random() * types.length)],
+      destination: destinations[Math.floor(Math.random() * destinations.length)].id,
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
+      basePrice: Math.floor(Math.random() * 500) + 50, // Цена от 50 до 550
+      offers: Array.from({ length: Math.floor(Math.random() * 3) }, (_, j) => j + 1), // 1-3 предложения
+      isFavorite: Math.random() > 0.7 // 30% вероятности быть избранным
+    };
+  });
+};

@@ -15,7 +15,8 @@ const SortType = {
 };
 
 export default class TripPresenter {
-  
+_currentEventComponent = null;
+_currentEditForm = null;
 constructor(containers, eventsModel, destinationsModel, offersModel) {
   if (!containers.eventsContainer || !containers.mainContainer) {
     throw new Error('Containers not provided');
@@ -68,6 +69,11 @@ showTestEditForm() {
   );
 }
   _renderTripInfo() {
+    this._tripInfoComponent = new TripInfoView(
+  this._eventsModel.getEvents(),
+  this._destinationsModel.getDestinations(),
+  this._offersModel.getOffers()
+);
     const container = this._mainContainer.querySelector('.trip-main__trip-info');
     if (!container) {
       console.error('Trip info container not found');
@@ -211,7 +217,7 @@ showTestEditForm() {
     this._replaceFormToEvent();
   }
 
-  const editFormComponent = new EventEditView(
+   const editFormComponent = new EventEditView(
     event,
     this._destinationsModel,
     this._offersModel
@@ -249,11 +255,12 @@ _replaceFormToEvent() {
   document.removeEventListener('keydown', this._escKeyDownHandler);
   this._currentEditForm = null;
   this._currentEventComponent = null;
+  this._renderEventsList();
 }
 _escKeyDownHandler = (evt) => {
   if (evt.key === 'Escape' && this._currentEditForm) {
     evt.preventDefault();
-    this.#replaceFormToEvent();
+    this._replaceFormToEvent();
   }
 };
 
