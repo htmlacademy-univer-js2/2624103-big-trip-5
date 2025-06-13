@@ -67,18 +67,17 @@ export default class EventsModel {
     );
   }
 
-  // Методы сортировки
-  getEventsSortedByDay() {
-    return [...this.getEvents()].sort((a, b) => 
-      new Date(a.dateFrom) - new Date(b.dateFrom)
-    );
+ 
+ getEventsSortedByDay() {
+    return [...this.getEvents()].sort((a, b) => a.dateFrom - b.dateFrom);
   }
 
-  getEventsSortedByTime() {
-    return [...this.getEvents()].sort((a, b) => 
-      (new Date(b.dateTo) - new Date(b.dateFrom)) - 
-      (new Date(a.dateTo) - new Date(a.dateFrom))
-    );
+ getEventsSortedByTime() {
+    return [...this.getEvents()].sort((a, b) => {
+      const durationA = a.dateTo - a.dateFrom;
+      const durationB = b.dateTo - b.dateFrom;
+      return durationB - durationA;
+    });
   }
 
   getEventsSortedByPrice() {
