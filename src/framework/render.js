@@ -1,4 +1,3 @@
-//новый
 import AbstractView from './view/abstract-view.js';
 
 /** @enum {string} Перечисление возможных позиций для отрисовки */
@@ -49,13 +48,16 @@ function replace(newComponent, oldComponent) {
     throw new Error('Can replace only components');
   }
 
-  const parent = oldComponent.element.parentElement;
-  if (!parent) {
+  const newElement = newComponent.element;
+  const oldElement = oldComponent.element;
+
+  const parent = oldElement.parentElement;
+
+  if (parent === null) {
     throw new Error('Parent element doesn\'t exist');
   }
 
-  parent.replaceChild(newComponent.element, oldComponent.element);
-  oldComponent.removeElement(); // Важно удалить старый компонент
+  parent.replaceChild(newElement, oldElement);
 }
 
 /**

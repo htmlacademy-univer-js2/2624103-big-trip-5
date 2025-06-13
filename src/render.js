@@ -60,7 +60,7 @@ function replace(newComponent, oldComponent) {
  * @param {AbstractView} component Компонент, который нужно удалить
  */
 function remove(component) {
-  if (component === null) {
+  if (component === null || component === undefined) {
     return;
   }
 
@@ -68,7 +68,6 @@ function remove(component) {
     throw new Error('Can remove only components');
   }
 
-  component.element.remove();
   component.removeElement();
 }
 

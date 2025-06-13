@@ -29,6 +29,7 @@ EVENTS.forEach(event => {
   const destinationsModel = new DestinationsModel();
   const offersModel = new OffersModel();
   const eventsModel = new EventsModel();
+  console.log('Models:', { destinationsModel, offersModel, eventsModel }); 
   try {
     destinationsModel.setDestinations(DESTINATIONS);
     offersModel.setOffers(OFFERS);

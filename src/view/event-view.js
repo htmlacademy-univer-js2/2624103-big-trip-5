@@ -2,15 +2,23 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { formatDate, formatTime, calculateDuration } from '../utils/date.js';
 
 export default class EventView extends AbstractStatefulView {
-  constructor(event, destinationsModel, offersModel) {
-    super();
-    console.log('EventView created for event:', event.id);
-    this._state = { ...event };
-    this._destinationsModel = destinationsModel;
-    this._offersModel = offersModel;
-    this._callback = {};
-    this.#setHandlers();
-  }
+ constructor({ 
+  event, 
+  destinationsModel, 
+  offersModel, 
+  onEditClick, 
+  onFavoriteClick 
+}) {
+  super();
+  this._state = { ...event };
+  this._destinationsModel = destinationsModel;
+  this._offersModel = offersModel;
+  this._callback = {
+    rollupClick: onEditClick,
+    favoriteClick: onFavoriteClick 
+  };
+  this.#setHandlers();
+}
   get template() {
     const { type, destination, dateFrom, dateTo, basePrice, isFavorite, offers } = this._state;
   
@@ -94,23 +102,37 @@ export default class EventView extends AbstractStatefulView {
     this.#setHandlers();
   }
 
- #favoriteClickHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.favoriteClick?.();
-  };
+#favoriteClickHandler = (evt) => {
+  evt.preventDefault();
+  if (typeof this._callback.favoriteClick === 'function') {
+    this._callback.favoriteClick({
+      ...this._state,
+      isFavorite: !this._state.isFavorite
+    });
+  } else {
+    console.error('Favorite click handler is not a function');
+  }
+};
+
   #rollupClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.rollupClick();
   };
 
    setFavoriteClickHandler(callback) {
+   const favoriteBtn = this.element.querySelector('.event__favorite-btn');
+    if (!favoriteBtn) return;
+    favoriteBtn.removeEventListener('click', this.#favoriteClickHandler);
     this._callback.favoriteClick = callback;
-    return this;
+    favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
   }
 
  setRollupClickHandler(callback) {
+    const rollupBtn = this.element.querySelector('.event__rollup-btn');
+    if (!rollupBtn) return;
+    rollupBtn.removeEventListener('click', this.#rollupClickHandler);
     this._callback.rollupClick = callback;
-    return this;
+    rollupBtn.addEventListener('click', this.#rollupClickHandler);
   }
  
     setEditClickHandler(callback) {

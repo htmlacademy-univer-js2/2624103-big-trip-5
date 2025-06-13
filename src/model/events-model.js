@@ -41,10 +41,10 @@ export default class EventsModel {
   }
 
   updateEvent(updatedEvent) {
-    this._events = this._events.map(event => 
-      event.id === updatedEvent.id ? updatedEvent : event
-    );
-  }
+  this._events = this._events.map(event => 
+    event.id === updatedEvent.id ? {...updatedEvent} : event
+  );
+}
 
   deleteEvent(id) {
     this._events = this._events.filter(event => event.id !== id);
