@@ -74,7 +74,7 @@ export default class TripPresenter {
   this.#eventPresenters.set(event.id, eventPresenter);
 }
 
-  #renderEventsList() {
+   #renderEventsList() {
     const eventsListElement = this.#eventsContainer.querySelector('.trip-events__list');
     if (!eventsListElement) {
       console.error('Events list container not found');
@@ -83,6 +83,11 @@ export default class TripPresenter {
 
     eventsListElement.innerHTML = '';
     const events = this.#getSortedEvents();
+    
+    if (events.length === 0) {
+      render(new EmptyListView(), eventsListElement);
+      return;
+    }
     
     events.forEach(event => {
       this.#renderEvent(event);
@@ -141,6 +146,7 @@ export default class TripPresenter {
     
     sortContainer.innerHTML = '';
     this.#sortComponent = new SortView(this.#currentSortType);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
     render(this.#sortComponent, sortContainer);
   }
 
@@ -152,16 +158,16 @@ export default class TripPresenter {
     if (list) list.innerHTML = '';
   }
 
-  #getSortedEvents() {
-    switch (this.#currentSortType) {
-      case SortType.TIME:
-        return this.#eventsModel.getEventsSortedByTime();
-      case SortType.PRICE:
-        return this.#eventsModel.getEventsSortedByPrice();
-      default: 
-        return this.#eventsModel.getEventsSortedByDay();
-    }
+ #getSortedEvents() {
+  switch (this.#currentSortType) {
+    case SortType.TIME:
+      return this.#eventsModel.getEventsSortedByTime();
+    case SortType.PRICE:
+      return this.#eventsModel.getEventsSortedByPrice();
+    default: 
+      return this.#eventsModel.getEventsSortedByDay();
   }
+}
 
 #handleEventChange = (updatedEvent, isDeleting = false) => {
   if (isDeleting) {
@@ -184,6 +190,11 @@ export default class TripPresenter {
   };
 
     #handleSortTypeChange = (sortType) => {
+
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+    
     this.#currentSortType = sortType;
     this.#clearEventsList();
     this.#renderEventsList();
