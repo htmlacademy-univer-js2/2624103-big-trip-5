@@ -238,12 +238,13 @@ static parseStateToEvent(state) {
   evt.preventDefault();
   this._callback.delete(this._state.id);
 };
-  #escKeyDownHandler = (evt) => {
-    if (evt.key === 'Escape') {
-      evt.preventDefault();
-      this.#closeHandler(evt);
-    }
-  };
+#escKeyDownHandler = (evt) => {
+  if (evt.key === 'Escape' || evt.key === 'Esc') {
+    evt.preventDefault();
+    evt.stopPropagation(); 
+    this.#closeHandler(evt);
+  }
+};
 #closeHandler = (evt) => {
    evt?.preventDefault();
   this._callback.close();
@@ -268,9 +269,9 @@ setDeleteHandler(callback) {
     this.#setHandlers();
   }
 
-  removeElement() {
-   document.removeEventListener('keydown', this.#escKeyDownHandler);
+removeElement() {
+  document.removeEventListener('keydown', this.#escKeyDownHandler);
   super.removeElement();
-  }
+}
   
 }
