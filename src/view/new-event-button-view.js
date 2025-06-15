@@ -16,7 +16,7 @@ export default class NewEventButtonView extends AbstractView {
         type="button"
         ${this._isDisabled ? 'disabled' : ''}
       >
-        <span class="visually-hidden">New event</span>+ New event
+        <span class="visually-hidden">New event</span>New event
       </button>
     `;
   }
@@ -31,3 +31,4 @@ export default class NewEventButtonView extends AbstractView {
     this.element.disabled = isDisabled;
   }
 }
+

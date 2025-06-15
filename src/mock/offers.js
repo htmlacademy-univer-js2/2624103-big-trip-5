@@ -39,7 +39,7 @@ export const generateOffers = () => {
     offers: titles.map((title, id) => ({
       id: id + 1,
       title,
-      price: Math.floor(Math.random() * 100) + 10 // Цена от 10 до 110
+      price: Math.floor(Math.random() * 100) + 10 
     }))
   }));
 };
