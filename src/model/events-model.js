@@ -25,7 +25,6 @@ export default class EventsModel {
     return this._events.map((event) => {
       const destination = this._destinationsModel.getDestinationById(event.destination);
       if (!destination) {
-        console.warn(`Destination not found for event ${event.id}: ${event.destination}`);
         return null;
       }
       return {

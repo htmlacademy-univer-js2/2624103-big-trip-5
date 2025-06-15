@@ -146,7 +146,7 @@ export default class EventPresenter {
   const fullUpdatedEvent = {
     ...this.#event,
     ...updatedEvent,
-    destination: destination.id 
+    destination: destination.id
   };
 
   this.#handleDataChange(fullUpdatedEvent);

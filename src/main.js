@@ -8,11 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const tripMainContainer = document.querySelector('.trip-main');
   const tripEventsContainer = document.querySelector('.trip-events');
   EVENTS.forEach((event) => {
-    if (!DESTINATIONS.some((d) => d.id === event.destination)) {
-      console.error(`Event ${event.id} has invalid destination: ${event.destination}`);
-    }
-  });
-  EVENTS.forEach((event) => {
     const typeOffers = OFFERS.find((o) => o.type === event.type)?.offers || [];
     event.offers.forEach((offerId) => {
       if (!typeOffers.some((o) => o.id === offerId)) {
@@ -21,9 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
   if (!tripMainContainer || !tripEventsContainer) {
-    console.error('Ошибка: не найдены необходимые контейнеры');
-    console.log('tripMainContainer:', tripMainContainer);
-    console.log('tripEventsContainer:', tripEventsContainer);
     return;
   }
   const destinationsModel = new DestinationsModel();
