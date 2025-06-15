@@ -21,6 +21,7 @@ export const OFFERS = [
     ]
   }
 ];
+
 export const generateOffers = () => {
   const offerTypes = {
     taxi: ['Повысить класс', 'Детское кресло'],
@@ -39,7 +40,7 @@ export const generateOffers = () => {
     offers: titles.map((title, id) => ({
       id: id + 1,
       title,
-      price: Math.floor(Math.random() * 100) + 10 
+      price: Math.floor(Math.random() * 100) + 10
     }))
   }));
 };
