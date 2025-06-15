@@ -104,18 +104,14 @@ export default class TripPresenter {
   }
 
   #renderNewEventButton() {
-    try {
-      if (this.#newEventButtonComponent) {
-        remove(this.#newEventButtonComponent);
-        this.#newEventButtonComponent = null;
-      }
-      this.#newEventButtonComponent = new NewEventButtonView({
-        onClick: this.#handleNewEventClick
-      });
-      render(this.#newEventButtonComponent, this.#mainContainer);
-    } catch (error) {
-      return;
+    if (this.#newEventButtonComponent) {
+      remove(this.#newEventButtonComponent);
+      this.#newEventButtonComponent = null;
     }
+    this.#newEventButtonComponent = new NewEventButtonView({
+      onClick: this.#handleNewEventClick
+    });
+    render(this.#newEventButtonComponent, this.#mainContainer);
   }
 
   #renderFilters() {

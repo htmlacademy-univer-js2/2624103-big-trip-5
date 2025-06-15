@@ -104,7 +104,7 @@ export default class NewEventEditView extends AbstractStatefulView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.submit(EventEditView.parseStateToEvent(this._state));
+    this._callback.submit(NewEventEditView.parseStateToEvent(this._state));
   };
 
   static parseStateToEvent(state) {
@@ -155,6 +155,7 @@ export default class NewEventEditView extends AbstractStatefulView {
     this._callback.delete = callback;
     return this;
   }
+
   removeElement() {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     super.removeElement();

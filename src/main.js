@@ -10,32 +10,26 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!tripMainContainer || !tripEventsContainer) {
     return;
   }
+
   const destinationsModel = new DestinationsModel();
   const offersModel = new OffersModel();
   const eventsModel = new EventsModel();
-  try {
-    destinationsModel.setDestinations(DESTINATIONS);
-    offersModel.setOffers(OFFERS);
-    eventsModel.setEvents(EVENTS);
 
-    eventsModel.setDestinationsModel(destinationsModel);
-    eventsModel.setOffersModel(offersModel);
-  } catch (error) {
-    return;
-  }
-  try {
-    const tripPresenter = new TripPresenter(
-      {
-        eventsContainer: tripEventsContainer,
-        mainContainer: tripMainContainer
-      },
-      eventsModel,
-      destinationsModel,
-      offersModel
-    );
-    tripPresenter.init();
-  } catch (error) {
-    return;
-  }
+  destinationsModel.setDestinations(DESTINATIONS);
+  offersModel.setOffers(OFFERS);
+  eventsModel.setEvents(EVENTS);
 
+  eventsModel.setDestinationsModel(destinationsModel);
+  eventsModel.setOffersModel(offersModel);
+
+  const tripPresenter = new TripPresenter(
+    {
+      eventsContainer: tripEventsContainer,
+      mainContainer: tripMainContainer
+    },
+    eventsModel,
+    destinationsModel,
+    offersModel
+  );
+  tripPresenter.init();
 });

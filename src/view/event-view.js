@@ -96,7 +96,6 @@ export default class EventView extends AbstractStatefulView {
     favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
   }
 
-
   _restoreHandlers() {
     this.#setHandlers();
   }
@@ -108,7 +107,7 @@ export default class EventView extends AbstractStatefulView {
         ...this._state,
         isFavorite: !this._state.isFavorite
       });
-    } 
+    }
   };
 
   #rollupClickHandler = (evt) => {
