@@ -2,12 +2,6 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { EVENT_TYPES, DEFAULT_EVENT } from '../const';
 import { formatDate, formatTime } from '../utils/date';
 
-const FormError = {
-  DESTINATION: 'Please select a valid destination from the list',
-  PRICE: 'Price must be a positive number',
-  DATES: 'End date must be after start date'
-};
-
 export default class EventEditView extends AbstractStatefulView {
   constructor(event = DEFAULT_EVENT, destinationsModel, offersModel) {
     super();
@@ -262,22 +256,21 @@ export default class EventEditView extends AbstractStatefulView {
     return {
       ...state,
       destination: destinationData.id, 
-      offers:state.offers.map(offer=>offer.id||offer) 
+      offers:state.offers.map(offer=>offer.id || offer) 
     };
   }
 
-  #destinationChangeHandler = (evt) => {
-    const destinationName = evt.target.value;
+ #destinationChangeHandler = (evt) => {
     const destination = this._destinationsModel.getDestinations()
-      .find(dest => dest.name === destinationName);
-    if (!destination) {
-      return;
-    }
+      .find((dest) => dest.name === evt.target.value);
 
-    this.updateElement({
-      destination: destination.id
-    });
+    if (destination) {
+      this.updateElement({
+        destination: destination.id
+      });
+    }
   };
+
 
   #rollupClickHandler = (evt) => {
     evt.preventDefault();

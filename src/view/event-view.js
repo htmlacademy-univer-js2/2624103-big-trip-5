@@ -96,7 +96,6 @@ export default class EventView extends AbstractStatefulView {
     favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
   }
 
-
   _restoreHandlers() {
     this.#setHandlers();
   }
