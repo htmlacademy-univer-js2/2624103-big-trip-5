@@ -6,7 +6,7 @@ import NewEventButtonView from '../view/new-event-button-view';
 import EmptyListView from '../view/empty-list-view';
 import {DEFAULT_EVENT} from '../const';
 import EventPresenter from './event-presenter';
-import {render, replace} from '../render';
+import {render, replace, remove} from '../render';
 
 const SortType = {
   DAY: 'day',
@@ -114,6 +114,7 @@ export default class TripPresenter {
       });
       render(this.#newEventButtonComponent, this.#mainContainer);
     } catch (error) {
+      return;
     }
   }
 

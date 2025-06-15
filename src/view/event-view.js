@@ -108,8 +108,7 @@ export default class EventView extends AbstractStatefulView {
         ...this._state,
         isFavorite: !this._state.isFavorite
       });
-    } else {
-    }
+    } 
   };
 
   #rollupClickHandler = (evt) => {
