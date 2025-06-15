@@ -35,9 +35,11 @@ import { generateRandomDate } from '../utils/date.js';
 
 export const generateEvents = (count, destinations) => {
   const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+  
   return Array.from({ length: count }, (_, index) => {
     const dateFrom = generateRandomDate();
-    const dateTo = new Date(dateFrom.getTime() + Math.random() * 48 * 60 * 60 * 1000);  
+    const dateTo = new Date(dateFrom.getTime() + Math.random() * 48 * 60 * 60 * 1000);
+    
     return {
       id: index + 1,
       type: types[Math.floor(Math.random() * types.length)],
@@ -45,7 +47,7 @@ export const generateEvents = (count, destinations) => {
       dateFrom: dateFrom.toISOString(),
       dateTo: dateTo.toISOString(),
       basePrice: Math.floor(Math.random() * 500) + 50,
-      offers: Array.from({ length: Math.floor(Math.random() * 3) }, (_, j) => j + 1),
+      offers: Array.from({ length: Math.floor(Math.random() * 3) }, (__, offerIndex) => offerIndex + 1),
       isFavorite: Math.random() > 0.7
     };
   });

@@ -1,6 +1,6 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { getTripTitle, calculateTotalPrice } from '../utils/trip.js';
-import {  formatDateRange } from '../utils/date.js';
+import { formatDateRange } from '../utils/date.js';
 export default class TripInfoView extends AbstractView {
   constructor(events = [], destinations = [], offers = []) {
     super();

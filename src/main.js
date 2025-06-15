@@ -7,14 +7,6 @@ import { DESTINATIONS, OFFERS, EVENTS } from './mock';
 document.addEventListener('DOMContentLoaded', () => {
   const tripMainContainer = document.querySelector('.trip-main');
   const tripEventsContainer = document.querySelector('.trip-events');
-  EVENTS.forEach((event) => {
-    const typeOffers = OFFERS.find((o) => o.type === event.type)?.offers || [];
-    event.offers.forEach((offerId) => {
-      if (!typeOffers.some((o) => o.id === offerId)) {
-        return;
-      }
-    });
-  });
   if (!tripMainContainer || !tripEventsContainer) {
     return;
   }
@@ -43,6 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
     );
     tripPresenter.init();
   } catch (error) {
+    return;
   }
 
 });

@@ -23,7 +23,6 @@ export default class EventEditView extends AbstractStatefulView {
     this.#setHandlers();
   }
   
-
   static parseEventToState(event) {
     return {
       ...event,
@@ -212,8 +211,6 @@ export default class EventEditView extends AbstractStatefulView {
     });
   };
 
- 
-
   #dateFromChangeHandler = (evt) => {
     this.updateElement({ dateFrom: new Date(evt.target.value) });
   };
@@ -235,39 +232,37 @@ export default class EventEditView extends AbstractStatefulView {
     this.updateElement({ offers });
   };
 
-   #formSubmitHandler = (evt) => {
+  #formSubmitHandler = (evt) => {
     evt.preventDefault();
     if (!this.#validateForm()) {
       return;
     }
     const eventData = this.#prepareEventData();
     this._callback.submit(eventData);
-  }
+  };
 
-   #validateForm() {
+  #validateForm() {
     const { destination, basePrice, dateFrom, dateTo } = this._state;
     const destinationData = this._destinationsModel.getDestinationById(destination);
     if (!destinationData) {
-      this.shake(() => alert(FormError.DESTINATION));
       return false;
     }
     if (basePrice <= 0 || isNaN(basePrice)) {
-      this.shake(() => alert(FormError.PRICE));
       return false;
     }
     if (dateTo <= dateFrom) {
-      this.shake(() => alert(FormError.DATES));
       return false;
     }
     return true;
   }
+
   #prepareEventData() {
     const state = { ...this._state };
     const destinationData = this._destinationsModel.getDestinationById(state.destination);
     return {
       ...state,
       destination: destinationData.id, 
-      offers: state.offers.map(offer => offer.id || offer) 
+      offers:state.offers.map(offer=>offer.id||offer) 
     };
   }
 
@@ -275,7 +270,6 @@ export default class EventEditView extends AbstractStatefulView {
     const destinationName = evt.target.value;
     const destination = this._destinationsModel.getDestinations()
       .find(dest => dest.name === destinationName);
-
     if (!destination) {
       return;
     }
@@ -284,8 +278,6 @@ export default class EventEditView extends AbstractStatefulView {
       destination: destination.id
     });
   };
-
-  
 
   #rollupClickHandler = (evt) => {
     evt.preventDefault();
@@ -326,10 +318,6 @@ export default class EventEditView extends AbstractStatefulView {
   setDeleteHandler(callback) {
     this._callback.delete = callback;
     return this;
-  }
-
-  _restoreHandlers() {
-    this.#setHandlers();
   }
 
   removeElement() {
