@@ -16,7 +16,7 @@ export default class EventEditView extends AbstractStatefulView {
 
     this.#setHandlers();
   }
-  
+
   static parseEventToState(event) {
     return {
       ...event,
@@ -255,12 +255,12 @@ export default class EventEditView extends AbstractStatefulView {
     const destinationData = this._destinationsModel.getDestinationById(state.destination);
     return {
       ...state,
-      destination: destinationData.id, 
-      offers:state.offers.map(offer=>offer.id || offer) 
+      destination: destinationData.id,
+      offers: state.offers.map((offer) => offer.id || offer)
     };
   }
 
- #destinationChangeHandler = (evt) => {
+  #destinationChangeHandler = (evt) => {
     const destination = this._destinationsModel.getDestinations()
       .find((dest) => dest.name === evt.target.value);
 

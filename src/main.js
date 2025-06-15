@@ -7,7 +7,6 @@ import { DESTINATIONS, OFFERS, EVENTS } from './mock';
 document.addEventListener('DOMContentLoaded', () => {
   const tripMainContainer = document.querySelector('.trip-main');
   const tripEventsContainer = document.querySelector('.trip-events');
-  
   if (!tripMainContainer || !tripEventsContainer) {
     return;
   }
@@ -32,6 +31,5 @@ document.addEventListener('DOMContentLoaded', () => {
     destinationsModel,
     offersModel
   );
-  
   tripPresenter.init();
 });
