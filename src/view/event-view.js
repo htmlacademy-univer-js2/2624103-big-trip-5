@@ -21,14 +21,13 @@ export default class EventView extends AbstractStatefulView {
   }
 
   get template() {
-    const { type, destination, dateFrom, dateTo, basePrice, isFavorite, offers } = this._state;
+    const { type, destination, dateFrom, dateTo, basePrice, isFavorite} = this._state;
 
     const destinationData = typeof destination === 'object'
       ? destination
       : this._destinationsModel.getDestinationById(destination);
 
     if (!destinationData) {
-      console.error('Destination data not found for:', destination);
       return '<div class="error">Invalid destination</div>';
     }
     const typeOffers = this._offersModel.getOffersByType(type);
@@ -90,7 +89,6 @@ export default class EventView extends AbstractStatefulView {
     const favoriteBtn = this.element.querySelector('.event__favorite-btn');
 
     if (!rollupBtn || !favoriteBtn) {
-      console.error('Кнопки не найдены:', { rollupBtn, favoriteBtn });
       return;
     }
 
@@ -111,7 +109,6 @@ export default class EventView extends AbstractStatefulView {
         isFavorite: !this._state.isFavorite
       });
     } else {
-      console.error('Favorite click handler is not a function');
     }
   };
 

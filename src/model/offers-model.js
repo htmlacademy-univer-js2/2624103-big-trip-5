@@ -16,3 +16,4 @@ export default class OffersModel {
     this._offers = offers;
   }
 }
+

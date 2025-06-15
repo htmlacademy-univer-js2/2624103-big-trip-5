@@ -35,11 +35,9 @@ import { generateRandomDate } from '../utils/date.js';
 
 export const generateEvents = (count, destinations) => {
   const types = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
-  
   return Array.from({ length: count }, (_, index) => {
     const dateFrom = generateRandomDate();
-    const dateTo = new Date(dateFrom.getTime() + Math.random() * 48 * 60 * 60 * 1000);
-    
+    const dateTo = new Date(dateFrom.getTime() + Math.random() * 48 * 60 * 60 * 1000);  
     return {
       id: index + 1,
       type: types[Math.floor(Math.random() * types.length)],

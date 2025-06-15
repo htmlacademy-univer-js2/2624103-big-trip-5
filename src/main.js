@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const typeOffers = OFFERS.find((o) => o.type === event.type)?.offers || [];
     event.offers.forEach((offerId) => {
       if (!typeOffers.some((o) => o.id === offerId)) {
-        console.error(`Event ${event.id} has invalid offer ID: ${offerId}`);
+        return;
       }
     });
   });
@@ -21,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const destinationsModel = new DestinationsModel();
   const offersModel = new OffersModel();
   const eventsModel = new EventsModel();
-  console.log('Models:', { destinationsModel, offersModel, eventsModel });
   try {
     destinationsModel.setDestinations(DESTINATIONS);
     offersModel.setOffers(OFFERS);
@@ -30,13 +29,8 @@ document.addEventListener('DOMContentLoaded', () => {
     eventsModel.setDestinationsModel(destinationsModel);
     eventsModel.setOffersModel(offersModel);
   } catch (error) {
-    console.error('Ошибка при загрузке данных:', error);
     return;
   }
-  console.log('Проверка данных перед инициализацией:');
-  console.log('Destinations:', destinationsModel.getDestinations());
-  console.log('Offers:', offersModel.getOffers());
-  console.log('Events:', eventsModel.getEvents());
   try {
     const tripPresenter = new TripPresenter(
       {
@@ -48,9 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
       offersModel
     );
     tripPresenter.init();
-    console.log('Презентер успешно инициализирован');
   } catch (error) {
-    console.error('Ошибка при инициализации презентера:', error);
   }
 
 });

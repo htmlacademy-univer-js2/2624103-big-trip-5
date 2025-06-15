@@ -44,13 +44,6 @@ export default class TripPresenter {
   }
 
   init() {
-    console.log('Trip container:', this.#eventsContainer);
-    console.log('List element:', this.#eventsContainer.querySelector('.trip-events__list'));
-    console.log('Проверка данных:', {
-      events: this.#eventsModel.getEvents(),
-      destinations: this.#destinationsModel.getDestinations(),
-      offers: this.#offersModel.getOffers()
-    });
     this.#renderTripInfo();
     this.#renderFilters();
     this.#renderSort();
@@ -79,7 +72,6 @@ export default class TripPresenter {
   #renderEventsList() {
     const eventsListElement = this.#eventsContainer.querySelector('.trip-events__list');
     if (!eventsListElement) {
-      console.error('Events list container not found');
       return;
     }
 
@@ -104,7 +96,6 @@ export default class TripPresenter {
     const container = this.#mainContainer.querySelector('.trip-main__trip-info');
 
     if (!container) {
-      console.error('Trip info container not found');
       return;
     }
 
@@ -122,9 +113,7 @@ export default class TripPresenter {
         onClick: this.#handleNewEventClick
       });
       render(this.#newEventButtonComponent, this.#mainContainer);
-      console.log('New event button rendered successfully');
     } catch (error) {
-      console.error('Error rendering new event button:', error);
     }
   }
 
@@ -180,10 +169,8 @@ export default class TripPresenter {
 
   #handleEventChange = (updatedEvent, isDeleting = false) => {
     if (isDeleting) {
-      console.log('Deleting event:', updatedEvent);
       this.#eventsModel.deleteEvent(updatedEvent);
     } else {
-      console.log('Updating event:', updatedEvent);
       this.#eventsModel.updateEvent(updatedEvent);
     }
 
