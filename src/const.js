@@ -1,11 +1,11 @@
 export const EVENT_TYPES = [
-  'taxi', 'bus', 'train', 'ship', 
-  'drive', 'flight', 'check-in', 
+  'taxi', 'bus', 'train', 'ship',
+  'drive', 'flight', 'check-in',
   'sightseeing', 'restaurant'
 ];
 
 export const DESTINATION_NAMES = [
-  'Amsterdam', 'Chamonix', 'Geneva', 
+  'Amsterdam', 'Chamonix', 'Geneva',
   'Paris', 'Berlin', 'Rome'
 ];
 

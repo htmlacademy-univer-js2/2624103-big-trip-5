@@ -4,6 +4,6 @@ import { generateEvents } from './events.js';
 
 const DESTINATIONS = generateDestinations();
 const OFFERS = generateOffers();
-const EVENTS = generateEvents(15, DESTINATIONS); 
+const EVENTS = generateEvents(15, DESTINATIONS);
 
 export { DESTINATIONS, OFFERS, EVENTS };

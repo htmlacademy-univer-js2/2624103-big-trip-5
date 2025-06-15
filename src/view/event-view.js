@@ -2,36 +2,36 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { formatDate, formatTime, calculateDuration } from '../utils/date.js';
 
 export default class EventView extends AbstractStatefulView {
- constructor({ 
-  event, 
-  destinationsModel, 
-  offersModel, 
-  onEditClick, 
-  onFavoriteClick 
-}) {
-  super();
-  this._state = { ...event };
-  this._destinationsModel = destinationsModel;
-  this._offersModel = offersModel;
-  this._callback = {
-    rollupClick: onEditClick,
-    favoriteClick: onFavoriteClick 
-  };
-  this.#setHandlers();
-}
-  get template() {
-    const { type, destination, dateFrom, dateTo, basePrice, isFavorite, offers } = this._state;
-  
-  const destinationData = typeof destination === 'object' 
-    ? destination 
-    : this._destinationsModel.getDestinationById(destination);
-
-  if (!destinationData) {
-    console.error(`Destination data not found for:`, destination);
-    return '<div class="error">Invalid destination</div>';
+  constructor({
+    event,
+    destinationsModel,
+    offersModel,
+    onEditClick,
+    onFavoriteClick
+  }) {
+    super();
+    this._state = { ...event };
+    this._destinationsModel = destinationsModel;
+    this._offersModel = offersModel;
+    this._callback = {
+      rollupClick: onEditClick,
+      favoriteClick: onFavoriteClick
+    };
+    this.#setHandlers();
   }
+
+  get template() {
+    const { type, destination, dateFrom, dateTo, basePrice, isFavorite} = this._state;
+
+    const destinationData = typeof destination === 'object'
+      ? destination
+      : this._destinationsModel.getDestinationById(destination);
+
+    if (!destinationData) {
+      return '<div class="error">Invalid destination</div>';
+    }
     const typeOffers = this._offersModel.getOffersByType(type);
-    const selectedOffers = typeOffers.filter(offer => this._state.offers.includes(offer.id));
+    const selectedOffers = typeOffers.filter((offer) => this._state.offers.includes(offer.id));
 
     return `
       <li class="trip-events__item">
@@ -59,7 +59,7 @@ export default class EventView extends AbstractStatefulView {
           ${selectedOffers.length > 0 ? `
             <h4 class="visually-hidden">Offers:</h4>
             <ul class="event__selected-offers">
-              ${selectedOffers.map(offer => `
+              ${selectedOffers.map((offer) => `
                 <li class="event__offer">
                   <span class="event__offer-title">${offer.title}</span>
                   &plus;&euro;&nbsp;
@@ -84,61 +84,61 @@ export default class EventView extends AbstractStatefulView {
     `;
   }
 
- #setHandlers() {
-  const rollupBtn = this.element.querySelector('.event__rollup-btn');
-  const favoriteBtn = this.element.querySelector('.event__favorite-btn');
-  
-  if (!rollupBtn || !favoriteBtn) {
-    console.error('Кнопки не найдены:', { rollupBtn, favoriteBtn });
-    return;
+  #setHandlers() {
+    const rollupBtn = this.element.querySelector('.event__rollup-btn');
+    const favoriteBtn = this.element.querySelector('.event__favorite-btn');
+
+    if (!rollupBtn || !favoriteBtn) {
+      return;
+    }
+
+    rollupBtn.addEventListener('click', this.#rollupClickHandler);
+    favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
   }
 
-  rollupBtn.addEventListener('click', this.#rollupClickHandler);
-  favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
-}
-
- 
   _restoreHandlers() {
     this.#setHandlers();
   }
 
-#favoriteClickHandler = (evt) => {
-  evt.preventDefault();
-  if (typeof this._callback.favoriteClick === 'function') {
-    this._callback.favoriteClick({
-      ...this._state,
-      isFavorite: !this._state.isFavorite
-    });
-  } else {
-    console.error('Favorite click handler is not a function');
-  }
-};
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    if (typeof this._callback.favoriteClick === 'function') {
+      this._callback.favoriteClick({
+        ...this._state,
+        isFavorite: !this._state.isFavorite
+      });
+    }
+  };
 
   #rollupClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.rollupClick();
   };
 
-   setFavoriteClickHandler(callback) {
-   const favoriteBtn = this.element.querySelector('.event__favorite-btn');
-    if (!favoriteBtn) return;
+  setFavoriteClickHandler(callback) {
+    const favoriteBtn = this.element.querySelector('.event__favorite-btn');
+    if (!favoriteBtn) {
+      return;
+    }
     favoriteBtn.removeEventListener('click', this.#favoriteClickHandler);
     this._callback.favoriteClick = callback;
     favoriteBtn.addEventListener('click', this.#favoriteClickHandler);
   }
 
- setRollupClickHandler(callback) {
+  setRollupClickHandler(callback) {
     const rollupBtn = this.element.querySelector('.event__rollup-btn');
-    if (!rollupBtn) return;
+    if (!rollupBtn) {
+      return;
+    }
     rollupBtn.removeEventListener('click', this.#rollupClickHandler);
     this._callback.rollupClick = callback;
     rollupBtn.addEventListener('click', this.#rollupClickHandler);
   }
- 
-    setEditClickHandler(callback) {
+
+  setEditClickHandler(callback) {
     this._callback.editClick = callback;
     return this;
   }
 
-  
+
 }

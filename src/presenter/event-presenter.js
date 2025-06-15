@@ -80,60 +80,75 @@ export default class EventPresenter {
   }
 
   #replaceEventToForm = () => {
-  const currentEventElement = this.#eventComponent.element;
-  this.#eventEditComponent = new EventEditView(
-    this.#event,
-    this.#destinationsModel,
-    this.#offersModel
-  );
-  this.#eventEditComponent.setSubmitHandler(this.#handleFormSubmit);
-  this.#eventEditComponent.setDeleteHandler(this.#handleDeleteClick);
-  this.#eventEditComponent.setCloseHandler(this.#handleCloseClick);
-  currentEventElement.replaceWith(this.#eventEditComponent.element);
-  document.addEventListener('keydown', this.#escKeyDownHandler);
-  this.#mode = 'EDITING';
-  this.#isEditFormOpen = true;
-};
+    const currentEventElement = this.#eventComponent.element;
+    this.#eventEditComponent = new EventEditView(
+      this.#event,
+      this.#destinationsModel,
+      this.#offersModel
+    );
+    this.#eventEditComponent.setSubmitHandler(this.#handleFormSubmit);
+    this.#eventEditComponent.setDeleteHandler(this.#handleDeleteClick);
+    this.#eventEditComponent.setCloseHandler(this.#handleCloseClick);
+    currentEventElement.replaceWith(this.#eventEditComponent.element);
+    document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = 'EDITING';
+    this.#isEditFormOpen = true;
+  };
 
   #replaceFormToEvent = () => {
-  if (this.#isEditFormOpen && this.#eventEditComponent) {
-    const newEventComponent = new EventView({
-      event: this.#event,
-      destinationsModel: this.#destinationsModel,
-      offersModel: this.#offersModel,
-      onEditClick: this.#handleEditClick,
-      onFavoriteClick: this.#handleFavoriteClick
-    });
-    this.#eventEditComponent.element.replaceWith(newEventComponent.element);
-    this.#eventComponent = newEventComponent;
-    document.removeEventListener('keydown', this.#escKeyDownHandler);
-    this.#mode = 'DEFAULT';
-    this.#isEditFormOpen = false;
-    this.#eventEditComponent = null;
-  }
-};
- #escKeyDownHandler = (evt) => {
-  if (evt.key === 'Escape' || evt.key === 'Esc') {
-    evt.preventDefault();
-    evt.stopPropagation(); 
-    this.#handleCloseClick();
-  }
-};
+    if (this.#isEditFormOpen && this.#eventEditComponent) {
+      const newEventComponent = new EventView({
+        event: this.#event,
+        destinationsModel: this.#destinationsModel,
+        offersModel: this.#offersModel,
+        onEditClick: this.#handleEditClick,
+        onFavoriteClick: this.#handleFavoriteClick
+      });
+      this.#eventEditComponent.element.replaceWith(newEventComponent.element);
+      this.#eventComponent = newEventComponent;
+      document.removeEventListener('keydown', this.#escKeyDownHandler);
+      this.#mode = 'DEFAULT';
+      this.#isEditFormOpen = false;
+      this.#eventEditComponent = null;
+    }
+  };
+
+  #escKeyDownHandler = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      evt.stopPropagation();
+      this.#handleCloseClick();
+    }
+  };
 
   #handleEditClick = () => {
     this.#replaceEventToForm();
   };
-  
-isEditFormOpen() {
-  return this.#mode === 'EDITING';
-}
+
+  isEditFormOpen() {
+    return this.#mode === 'EDITING';
+  }
 
   #handleFavoriteClick = (updatedEvent) => {
     this.#handleDataChange(updatedEvent);
   };
 
   #handleFormSubmit = (updatedEvent) => {
-    this.#handleDataChange(updatedEvent);
+    if (!updatedEvent.destination) {
+      this.#eventEditComponent.shake();
+      return;
+    }
+    const destination = this.#destinationsModel.getDestinationById(updatedEvent.destination);
+    if (!destination) {
+      this.#eventEditComponent.shake();
+      return;
+    }
+    const fullUpdatedEvent = {
+      ...this.#event,
+      ...updatedEvent,
+      destination: destination.id
+    };
+    this.#handleDataChange(fullUpdatedEvent);
     this.#replaceFormToEvent();
   };
 

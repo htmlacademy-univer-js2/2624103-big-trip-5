@@ -8,7 +8,7 @@ export default class DestinationsModel {
   }
 
   getDestinationById(id) {
-    return this._destinations.find(destination => destination.id === id);
+    return this._destinations.find((destination) => destination.id === id);
   }
 
   setDestinations(destinations) {

@@ -1,10 +1,16 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
+const SortType = {
+  DAY: 'day',
+  TIME: 'time',
+  PRICE: 'price'
+};
+
 export default class SortView extends AbstractView {
   constructor(currentSortType) {
     super();
     this._currentSortType = currentSortType;
-    this._callback = {}; 
+    this._callback = {};
   }
 
   get template() {
@@ -43,8 +49,4 @@ export default class SortView extends AbstractView {
   };
 }
 
-const SortType = {
-  DAY: 'day',
-  TIME: 'time',
-  PRICE: 'price'
-};
+
