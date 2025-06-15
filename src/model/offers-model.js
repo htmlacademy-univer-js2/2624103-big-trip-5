@@ -8,7 +8,7 @@ export default class OffersModel {
   }
 
   getOffersByType(type) {
-    const offerGroup = this._offers.find(offer => offer.type === type);
+    const offerGroup = this._offers.find((offer) => offer.type === type);
     return offerGroup ? offerGroup.offers : [];
   }
 

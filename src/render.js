@@ -49,8 +49,8 @@ function replace(newComponent, oldComponent) {
   if (!parent) {
     throw new Error('Can\'t replace unexisting parent');
   }
-  
- parent.replaceChild(newComponent.element, oldComponent.element);
+
+  parent.replaceChild(newComponent.element, oldComponent.element);
   oldComponent.removeElement();
 }
 
