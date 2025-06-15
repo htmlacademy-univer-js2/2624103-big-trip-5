@@ -9,7 +9,6 @@ const parseDate = (dateInput) => {
 export const formatDate = (dateInput) => {
   const date = parseDate(dateInput);
   if (!date) {
-    console.error('Invalid date input:', dateInput);
     return 'N/A';
   }
 
@@ -22,7 +21,6 @@ export const formatDate = (dateInput) => {
 export const formatTime = (dateInput) => {
   const date = parseDate(dateInput);
   if (!date) {
-    console.error('Invalid date input:', dateInput);
     return 'N/A';
   }
 
@@ -37,7 +35,6 @@ export const calculateDuration = (dateFromInput, dateToInput) => {
   const dateTo = parseDate(dateToInput);
 
   if (!dateFrom || !dateTo) {
-    console.error('Invalid dates:', { dateFromInput, dateToInput });
     return 'N/A';
   }
 
@@ -81,7 +78,6 @@ export const formatDateRange = (dateFrom, dateTo) => {
       ? `${startStr}, ${formatTime(start)} – ${formatTime(end)}`
       : `${startStr} – ${endStr}`;
   } catch (error) {
-    console.error('Error formatting date range:', error);
     return 'N/A';
   }
 };

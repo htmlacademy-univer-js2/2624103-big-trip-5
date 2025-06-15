@@ -155,11 +155,6 @@ export default class NewEventEditView extends AbstractStatefulView {
     this._callback.delete = callback;
     return this;
   }
-
-  _restoreHandlers() {
-    this.#setHandlers();
-  }
-
   removeElement() {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
     super.removeElement();

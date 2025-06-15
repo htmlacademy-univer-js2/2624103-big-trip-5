@@ -133,25 +133,24 @@ export default class EventPresenter {
     this.#handleDataChange(updatedEvent);
   };
 
-#handleFormSubmit = (updatedEvent) => {
-  if (!updatedEvent.destination) {
-    this.#eventEditComponent.shake();
-    return;
-  }
-  const destination = this.#destinationsModel.getDestinationById(updatedEvent.destination);
-  if (!destination) {
-    this.#eventEditComponent.shake();
-    return;
-  }
-  const fullUpdatedEvent = {
-    ...this.#event,
-    ...updatedEvent,
-    destination: destination.id
+  #handleFormSubmit = (updatedEvent) => {
+    if (!updatedEvent.destination) {
+      this.#eventEditComponent.shake();
+      return;
+    }
+    const destination = this.#destinationsModel.getDestinationById(updatedEvent.destination);
+    if (!destination) {
+      this.#eventEditComponent.shake();
+      return;
+    }
+    const fullUpdatedEvent = {
+      ...this.#event,
+      ...updatedEvent,
+      destination: destination.id
+    };
+    this.#handleDataChange(fullUpdatedEvent);
+    this.#replaceFormToEvent();
   };
-
-  this.#handleDataChange(fullUpdatedEvent);
-  this.#replaceFormToEvent();
-};
 
   #handleDeleteClick = (eventId) => {
     this.#handleDataChange(eventId, true);
